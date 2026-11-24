@@ -10,10 +10,15 @@ export const CONFIG = {
 
 
   // Screen 2 Welcome prompt
+  welcomeTitle: "Happy Birthday",
   welcomeSubtitle: "Today is all about celebrating the most radiant, wonderful person in the world.",
 
   // Screen 3 Hidden message words revealed by popping the 4 hearts
   hiddenMessageWords: ["You", "Make", "Everything", "Magical"],
+
+  // Screen 4 Cake & Wish texts
+  cakeWishTitle: "✨ Close your eyes & make a wish ✨",
+  cakeWishMessage: "May every single dream in your heart find its way home.",
 
   // Screen 5 Compliment cards for the floral bouquet (6 heartfelt cards)
   complimentsList: [
@@ -77,8 +82,14 @@ Happy Birthday, my queen. Keep shining with that breathtaking grace.
 With all my love and sweetest hugs,
 Always & Forever 💕`,
 
+  // Screen 7 Gift Box
+  giftTitle: "Unwrap Your Surprise",
+
   // Screen 8 Finale Card Details
   finaleBadge: "Happy Birthday, Queen 👑",
   finaleQuote: "Lots of love, always 💖",
-  finaleFooter: "May all your birthday wishes dance into reality today ✨"
+  finaleFooter: "May all your birthday wishes dance into reality today ✨",
+
+  // WhatsApp Number (optional, e.g. +919876543210 or 919876543210)
+  whatsAppNumber: "",
 };

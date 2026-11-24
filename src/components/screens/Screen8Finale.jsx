@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Crown, Heart, Sparkles, RotateCcw, Camera, MessageSquareHeart, Share2, Check, ArrowRight } from 'lucide-react';
-import { CONFIG } from '../../config';
+import { useAppConfig } from '../../context/AppConfigContext';
 import { startContinuousShower, stopContinuousShower, fireGrandCelebration } from '../../utils/confetti';
 import { playTapSound, playSuccessChime } from '../../utils/soundEffects';
 
-export default function Screen8Finale({ onReplay, onGoToReply, cleanView, setCleanView, config }) {
+export default function Screen8Finale({ onReplay, onGoToReply, cleanView, setCleanView }) {
+  const { config } = useAppConfig();
   const [copiedToast, setCopiedToast] = useState(false);
 
   useEffect(() => {
@@ -51,7 +52,7 @@ export default function Screen8Finale({ onReplay, onGoToReply, cleanView, setCle
           className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-rosegold/15 border border-rosegold/30 text-rosegold text-xs font-bold shadow-sm mt-1"
         >
           <Crown className="w-4 h-4 fill-rosegold/40" />
-          <span>{config?.finaleBadge || CONFIG.finaleBadge || "Happy Birthday, Queen 👑"}</span>
+          <span>{config?.finaleBadge || "Happy Birthday, Queen 👑"}</span>
         </motion.div>
       )}
 
@@ -72,18 +73,18 @@ export default function Screen8Finale({ onReplay, onGoToReply, cleanView, setCle
           Forever Celebrated
         </h3>
         <h1 className="font-serif text-2xl md:text-3xl font-bold text-plum tracking-tight leading-snug mb-3">
-          {config?.recipientName || CONFIG.recipientName}
+          {config?.recipientName || "Princess"}
         </h1>
 
         {/* Romantic quote */}
         <div className="relative py-3 px-4 rounded-2xl bg-white/70 border border-rosegold/20 my-2 shadow-sm w-full">
           <p className="font-serif italic text-sm text-plum/90 leading-relaxed">
-            "{config?.finaleQuote || CONFIG.finaleQuote || "Lots of love, always 💖"}"
+            "{config?.finaleQuote || "Lots of love, always 💖"}"
           </p>
         </div>
 
         <p className="text-xs text-plum/70 font-medium mt-3 leading-relaxed">
-          {config?.finaleFooter || CONFIG.finaleFooter || "May all your birthday wishes dance into reality today ✨"}
+          {config?.finaleFooter || "May all your birthday wishes dance into reality today ✨"}
         </p>
 
         {/* Delicate Heart Stamps */}

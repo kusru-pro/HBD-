@@ -13,17 +13,15 @@ import Screen8Finale from './components/screens/Screen8Finale';
 import Screen9Reply from './components/screens/Screen9Reply';
 import AdminDashboard from './components/admin/AdminDashboard';
 import { musicBox } from './utils/musicBox';
-import { getStoredConfig } from './utils/storage';
+import { useAppConfig } from './context/AppConfigContext';
 
 export default function App() {
+  const { config } = useAppConfig();
   const [currentStep, setCurrentStep] = useState(1);
   const [maxUnlockedStep, setMaxUnlockedStep] = useState(1);
   const [direction, setDirection] = useState(1); // 1 = forward, -1 = back
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const [cleanView, setCleanView] = useState(false);
-
-  // Dynamic configuration from localStorage
-  const [config, setConfig] = useState(getStoredConfig());
 
   // Admin Dashboard modal state (accessible via #admin or 5-tap gesture)
   const [isAdminOpen, setIsAdminOpen] = useState(
@@ -68,16 +66,7 @@ export default function App() {
     return () => window.removeEventListener('hashchange', checkHash);
   }, []);
 
-  // Listen to config updates from storage
-  useEffect(() => {
-    const handleConfigEvent = (e) => {
-      if (e.detail) {
-        setConfig({ ...e.detail });
-      }
-    };
-    window.addEventListener('hbd_config_updated', handleConfigEvent);
-    return () => window.removeEventListener('hbd_config_updated', handleConfigEvent);
-  }, []);
+
 
   const handleToggleMusic = () => {
     const playing = musicBox.toggle();
@@ -188,7 +177,6 @@ export default function App() {
               >
                 <Screen1Passcode 
                   onUnlock={handleNext} 
-                  config={config} 
                   onOpenAdmin={() => setIsAdminOpen(true)}
                 />
               </motion.div>
@@ -206,7 +194,6 @@ export default function App() {
               >
                 <Screen2Welcome 
                   onNext={handleNext} 
-                  config={config}
                 />
               </motion.div>
             )}
@@ -225,7 +212,6 @@ export default function App() {
                   onNext={handleNext}
                   popped={poppedHearts}
                   setPopped={setPoppedHearts}
-                  config={config}
                 />
               </motion.div>
             )}
@@ -264,7 +250,6 @@ export default function App() {
                   onNext={handleNext}
                   openedCards={openedComplimentCards}
                   setOpenedCards={setOpenedComplimentCards}
-                  config={config}
                 />
               </motion.div>
             )}
@@ -285,7 +270,6 @@ export default function App() {
                   setIsOpen={setEnvelopeOpened}
                   isTypingDone={letterTypingDone}
                   setIsTypingDone={setLetterTypingDone}
-                  config={config}
                 />
               </motion.div>
             )}
@@ -325,7 +309,6 @@ export default function App() {
                   onGoToReply={handleNext}
                   cleanView={cleanView}
                   setCleanView={setCleanView}
-                  config={config}
                 />
               </motion.div>
             )}
@@ -341,7 +324,6 @@ export default function App() {
                 className="w-full flex justify-center"
               >
                 <Screen9Reply
-                  config={config}
                   onReplay={handleReplay}
                 />
               </motion.div>
@@ -354,7 +336,6 @@ export default function App() {
       <AdminDashboard
         isOpen={isAdminOpen}
         onClose={handleCloseAdmin}
-        onConfigSaved={handleConfigSaved}
       />
     </div>
   );

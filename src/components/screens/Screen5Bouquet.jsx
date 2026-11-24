@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Heart, X, Check, ArrowRight } from 'lucide-react';
-import { CONFIG } from '../../config';
+import { useAppConfig } from '../../context/AppConfigContext';
 import { playTapSound, playSuccessChime } from '../../utils/soundEffects';
 import { firePastelConfetti } from '../../utils/confetti';
 
-export default function Screen5Bouquet({ onNext, openedCards, setOpenedCards, config }) {
-  const compliments = config?.complimentsList || CONFIG.complimentsList || [];
+export default function Screen5Bouquet({ onNext, openedCards, setOpenedCards }) {
+  const { config } = useAppConfig();
+  const compliments = config?.complimentsList || [];
   const [activeCard, setActiveCard] = useState(null);
 
   // Positions of the 6 floating tags around the bouquet

@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Sparkles, ArrowRight, RotateCcw } from 'lucide-react';
-import { CONFIG } from '../../config';
+import { useAppConfig } from '../../context/AppConfigContext';
 import { playPopSound, playSuccessChime, playTapSound } from '../../utils/soundEffects';
 import { firePastelConfetti } from '../../utils/confetti';
 
@@ -36,8 +36,9 @@ const BALLOON_STYLES = [
   }
 ];
 
-export default function Screen3PopHearts({ onNext, popped, setPopped, config }) {
-  const words = config?.hiddenMessageWords || CONFIG.hiddenMessageWords || ["You", "Make", "Everything", "Magical"];
+export default function Screen3PopHearts({ onNext, popped, setPopped }) {
+  const { config } = useAppConfig();
+  const words = config?.hiddenMessageWords || ["You", "Make", "Everything", "Magical"];
   const allPopped = popped.every(Boolean);
 
   const handlePop = (index, e) => {

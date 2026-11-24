@@ -4,15 +4,21 @@
 import { CONFIG as DEFAULT_CONFIG } from '../config';
 
 const STORAGE_KEYS = {
-  CONFIG: 'hbd_surprise_config',
-  REPLIES: 'hbd_surprise_replies',
-  ADMIN_PIN: 'hbd_surprise_admin_pin',
+  CONFIG: 'birthday_app_data_v1',
+  REPLIES: 'birthday_app_replies_v1',
+  ADMIN_PIN: 'birthday_app_admin_pin',
 };
 
 // 1. Config Management
 export function getStoredConfig() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEYS.CONFIG);
+    let raw = localStorage.getItem(STORAGE_KEYS.CONFIG);
+    if (!raw) {
+      raw = localStorage.getItem('hbd_surprise_config');
+      if (raw) {
+        localStorage.setItem(STORAGE_KEYS.CONFIG, raw);
+      }
+    }
     if (!raw) return { ...DEFAULT_CONFIG };
     const parsed = JSON.parse(raw);
     return {

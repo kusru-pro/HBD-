@@ -41,6 +41,42 @@ export default function TabGeneral({ config, onChange, adminPin, onAdminPinChang
         </p>
       </div>
 
+      {/* Screen 1 Passcode Hint */}
+      <div className="p-4 rounded-2xl bg-white/70 border border-blush-200/80 shadow-sm">
+        <label className="flex items-center gap-2 text-xs font-bold text-plum mb-1.5">
+          <KeyRound className="w-4 h-4 text-rosegold" />
+          <span>Lock Screen Hint</span>
+        </label>
+        <input
+          type="text"
+          value={config.passcodeHint || ''}
+          onChange={(e) => onChange('passcodeHint', e.target.value)}
+          placeholder="Enter your special date 💖"
+          className="w-full px-3 py-2 rounded-xl bg-white border border-blush-200 text-sm text-plum focus:outline-none focus:ring-2 focus:ring-rosegold/40 font-medium"
+        />
+        <p className="text-[10px] text-plum/50 mt-1">
+          Hint displayed below the secret lock on Screen 1.
+        </p>
+      </div>
+
+      {/* WhatsApp Number (Optional) */}
+      <div className="p-4 rounded-2xl bg-white/70 border border-blush-200/80 shadow-sm">
+        <label className="flex items-center gap-2 text-xs font-bold text-plum mb-1.5">
+          <Sparkles className="w-4 h-4 text-rosegold" />
+          <span>WhatsApp Phone Number (Optional)</span>
+        </label>
+        <input
+          type="text"
+          value={config.whatsAppNumber || ''}
+          onChange={(e) => onChange('whatsAppNumber', e.target.value)}
+          placeholder="e.g. +919876543210"
+          className="w-full px-3 py-2 rounded-xl bg-white border border-blush-200 text-sm text-plum focus:outline-none focus:ring-2 focus:ring-rosegold/40 font-medium"
+        />
+        <p className="text-[10px] text-plum/50 mt-1">
+          With country code. If provided, allows sending the reply note to WhatsApp as well.
+        </p>
+      </div>
+
       {/* Admin Dashboard PIN */}
       <div className="p-4 rounded-2xl bg-white/70 border border-blush-200/80 shadow-sm">
         <label className="flex items-center gap-2 text-xs font-bold text-plum mb-1.5">

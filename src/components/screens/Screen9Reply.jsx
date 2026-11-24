@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Heart, Send, CheckCircle2, RotateCcw } from 'lucide-react';
-import { saveNewReply } from '../../utils/storage';
+import { Sparkles, Heart, Send, CheckCircle2, RotateCcw, MessageCircle } from 'lucide-react';
+import { useAppConfig } from '../../context/AppConfigContext';
 import { firePastelConfetti } from '../../utils/confetti';
 import { playTapSound, playSuccessChime } from '../../utils/soundEffects';
 
@@ -14,22 +14,24 @@ const MOOD_OPTIONS = [
   { id: 'speechless', label: 'Speechless 🥹', emoji: '🥹' },
 ];
 
-export default function Screen9Reply({ config, onReplay }) {
+export default function Screen9Reply({ onReplay }) {
+  const { config, addReply } = useAppConfig();
   const [selectedMood, setSelectedMood] = useState(MOOD_OPTIONS[0]);
   const [message, setMessage] = useState('');
   const [isSent, setIsSent] = useState(false);
   const [sentDetails, setSentDetails] = useState(null);
 
-  const handleSendReply = (e) => {
+  const handleSendReply = async (e) => {
     e.preventDefault();
     if (!message.trim()) return;
 
     playSuccessChime();
     firePastelConfetti({ x: 0.5, y: 0.5 });
 
-    const saved = saveNewReply({
+    const saved = await addReply({
       mood: selectedMood.label,
       message: message.trim(),
+      timestamp: new Date().toISOString(),
     });
 
     setSentDetails(saved);
@@ -187,7 +189,7 @@ export default function Screen9Reply({ config, onReplay }) {
               </div>
 
               {/* Action Button in Confirmation */}
-              <div className="w-full">
+              <div className="w-full flex flex-col gap-2">
                 <button
                   type="button"
                   onClick={handleWriteAnother}
@@ -195,6 +197,20 @@ export default function Screen9Reply({ config, onReplay }) {
                 >
                   Write another note ✏️
                 </button>
+
+                {config?.whatsAppNumber && (
+                  <a
+                    href={`https://wa.me/${config.whatsAppNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
+                      `[${sentDetails?.mood || '💖'}] "${sentDetails?.message || ''}"`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-colors"
+                  >
+                    <MessageCircle className="w-3.5 h-3.5" />
+                    <span>Also Send on WhatsApp 💬</span>
+                  </a>
+                )}
               </div>
             </motion.div>
           )}

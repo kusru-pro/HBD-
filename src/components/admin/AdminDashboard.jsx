@@ -4,10 +4,7 @@ import {
   Shield, KeyRound, X, Eye, Save, Settings, Smartphone, 
   Mail, MessageSquareHeart, Check, Sparkles, AlertCircle 
 } from 'lucide-react';
-import { 
-  getStoredConfig, saveStoredConfig, getAdminPin, saveAdminPin, 
-  getStoredReplies, fetchLatestReplies 
-} from '../../utils/storage';
+import { useAppConfig } from '../../context/AppConfigContext';
 import { playTapSound, playSuccessChime, playErrorSound } from '../../utils/soundEffects';
 
 import TabGeneral from './TabGeneral';
@@ -17,6 +14,7 @@ import TabReplies from './TabReplies';
 import TabSettings from './TabSettings';
 
 export default function AdminDashboard({ isOpen, onClose, onConfigSaved }) {
+  const { config, saveConfig, adminPin, saveAdminPin, replies, resetConfig } = useAppConfig();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [enteredPin, setEnteredPin] = useState('');
   const [pinError, setPinError] = useState('');
@@ -26,38 +24,24 @@ export default function AdminDashboard({ isOpen, onClose, onConfigSaved }) {
   const [activeTab, setActiveTab] = useState('general');
 
   // Working state copy of config and admin PIN
-  const [editableConfig, setEditableConfig] = useState(getStoredConfig());
-  const [editableAdminPin, setEditableAdminPin] = useState(getAdminPin());
-  const [replies, setReplies] = useState([]);
+  const [editableConfig, setEditableConfig] = useState(config);
+  const [editableAdminPin, setEditableAdminPin] = useState(adminPin);
   const [saveToast, setSaveToast] = useState(false);
 
-  // Refresh config and replies whenever opened
+  // Synchronize editable copy when modal is opened or when external config changes
   useEffect(() => {
     if (isOpen) {
-      setEditableConfig(getStoredConfig());
-      setEditableAdminPin(getAdminPin());
-      setReplies(getStoredReplies());
-      fetchLatestReplies().then(data => {
-        if (data) setReplies(data);
-      });
+      setEditableConfig(config);
+      setEditableAdminPin(adminPin);
     }
-  }, [isOpen]);
-
-  // Live real-time update listener
-  useEffect(() => {
-    const handleUpdate = (e) => {
-      if (e.detail) setReplies(e.detail);
-    };
-    window.addEventListener('hbd_replies_updated', handleUpdate);
-    return () => window.removeEventListener('hbd_replies_updated', handleUpdate);
-  }, []);
+  }, [isOpen, config, adminPin]);
 
   if (!isOpen) return null;
 
   // 1. PIN Authentication Handler
   const handlePinSubmit = (e) => {
     e?.preventDefault?.();
-    const currentActualPin = getAdminPin() || '0000';
+    const currentActualPin = adminPin || '0000';
 
     if (enteredPin === currentActualPin) {
       playSuccessChime();
@@ -85,7 +69,7 @@ export default function AdminDashboard({ isOpen, onClose, onConfigSaved }) {
   // 3. Save All Changes
   const handleSaveAll = () => {
     playSuccessChime();
-    saveStoredConfig(editableConfig);
+    saveConfig(editableConfig);
     if (editableAdminPin && editableAdminPin.length >= 4) {
       saveAdminPin(editableAdminPin);
     }
@@ -256,17 +240,15 @@ export default function AdminDashboard({ isOpen, onClose, onConfigSaved }) {
               )}
 
               {activeTab === 'replies' && (
-                <TabReplies
-                  replies={replies}
-                  onRepliesUpdated={() => setReplies(getStoredReplies())}
-                />
+                <TabReplies />
               )}
 
               {activeTab === 'settings' && (
                 <TabSettings
                   onResetCompleted={() => {
-                    setEditableConfig(getStoredConfig());
-                    setEditableAdminPin(getAdminPin());
+                    const fresh = resetConfig();
+                    setEditableConfig(fresh);
+                    setEditableAdminPin('0000');
                   }}
                 />
               )}

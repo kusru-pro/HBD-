@@ -1,24 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { MessageSquareHeart, Trash2, Copy, Check, Clock, Sparkles, RefreshCw } from 'lucide-react';
-import { deleteStoredReply, clearAllReplies, fetchLatestReplies } from '../../utils/storage';
+import { useAppConfig } from '../../context/AppConfigContext';
 import { playTapSound, playSuccessChime } from '../../utils/soundEffects';
 
-export default function TabReplies({ replies, onRepliesUpdated }) {
+export default function TabReplies() {
+  const { replies, deleteReply, clearReplies, refreshReplies } = useAppConfig();
   const [copiedId, setCopiedId] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Auto-fetch latest replies from server on mount
+  // Auto-fetch latest replies on mount
   useEffect(() => {
-    fetchLatestReplies().then(() => {
-      onRepliesUpdated?.();
-    });
-  }, []);
+    refreshReplies?.();
+  }, [refreshReplies]);
 
   const handleRefresh = async () => {
     playTapSound();
     setIsRefreshing(true);
-    await fetchLatestReplies();
-    onRepliesUpdated?.();
+    await refreshReplies?.();
     setTimeout(() => setIsRefreshing(false), 600);
   };
 
@@ -35,16 +33,14 @@ export default function TabReplies({ replies, onRepliesUpdated }) {
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this reply?")) {
       playTapSound();
-      deleteStoredReply(id);
-      onRepliesUpdated?.();
+      deleteReply(id);
     }
   };
 
   const handleClearAll = () => {
     if (window.confirm("Clear all received replies from the inbox? This cannot be undone.")) {
       playTapSound();
-      clearAllReplies();
-      onRepliesUpdated?.();
+      clearReplies();
     }
   };
 

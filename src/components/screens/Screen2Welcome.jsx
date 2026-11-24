@@ -1,11 +1,12 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Heart, Crown, Gift, ArrowRight } from 'lucide-react';
-import { CONFIG } from '../../config';
+import { useAppConfig } from '../../context/AppConfigContext';
 import { firePastelConfetti } from '../../utils/confetti';
 import { playTapSound, playSuccessChime } from '../../utils/soundEffects';
 
-export default function Screen2Welcome({ onNext, config }) {
+export default function Screen2Welcome({ onNext }) {
+  const { config } = useAppConfig();
   const [noPos, setNoPos] = useState({ x: 0, y: 0 });
   const [dodgeCount, setDodgeCount] = useState(0);
   const [funMessage, setFunMessage] = useState('');
@@ -64,14 +65,14 @@ export default function Screen2Welcome({ onNext, config }) {
 
         {/* Script & Serif Typography */}
         <h2 className="font-script text-3xl md:text-4xl text-rosegold tracking-wide mb-1 drop-shadow-sm">
-          Happy Birthday
+          {config?.welcomeTitle || "Happy Birthday"}
         </h2>
         <h1 className="font-serif text-3xl md:text-4xl font-bold text-plum tracking-tight leading-tight mb-2">
-          {config?.recipientName || CONFIG.recipientName} ✨
+          {config?.recipientName || "Princess"} ✨
         </h1>
 
         <p className="text-xs text-plum/75 max-w-[280px] font-medium leading-relaxed">
-          {config?.welcomeSubtitle || CONFIG.welcomeSubtitle}
+          {config?.welcomeSubtitle || "Today is all about celebrating the most radiant, wonderful person in the world."}
         </p>
       </motion.div>
 

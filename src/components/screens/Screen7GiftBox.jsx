@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Gift, Heart, ArrowRight, RotateCcw } from 'lucide-react';
+import { useAppConfig } from '../../context/AppConfigContext';
 import { playWobbleSound, playSuccessChime, playTapSound } from '../../utils/soundEffects';
 import { fireGrandCelebration, firePastelConfetti } from '../../utils/confetti';
 
@@ -11,6 +12,7 @@ export default function Screen7GiftBox({
   isOpened, 
   setIsOpened 
 }) {
+  const { config } = useAppConfig();
   const tapHints = [
     "Tap the box to start unwrapping! 🎀",
     "2 more taps! Ribbon is untying... ✨",
@@ -89,7 +91,7 @@ export default function Screen7GiftBox({
         </motion.div>
 
         <h2 className="font-serif text-2xl font-bold text-plum mb-1 tracking-tight">
-          Unwrap Your Gift 🎁
+          {config?.giftTitle || "Unwrap Your Gift 🎁"}
         </h2>
         <p className="text-xs text-plum/70 font-medium max-w-[280px]">
           {tapHints[tapCount]}

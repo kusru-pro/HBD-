@@ -3,8 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Lock, Unlock, Heart, Delete, Sparkles, Shield } from 'lucide-react';
 import { playTapSound, playErrorSound, playSuccessChime } from '../../utils/soundEffects';
 import { firePastelConfetti } from '../../utils/confetti';
+import { useAppConfig } from '../../context/AppConfigContext';
 
-export default function Screen1Passcode({ onUnlock, config, onOpenAdmin }) {
+export default function Screen1Passcode({ onUnlock, onOpenAdmin }) {
+  const { config } = useAppConfig();
   const [digits, setDigits] = useState('');
   const [isShaking, setIsShaking] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -145,7 +147,7 @@ export default function Screen1Passcode({ onUnlock, config, onOpenAdmin }) {
           animate={{ opacity: 1, y: 0 }}
           className="font-serif text-2xl font-bold text-plum mt-5 tracking-tight"
         >
-          A Secret For You
+          {config?.passcodeTitle || (config?.recipientName ? `A Secret For ${config.recipientName}` : "A Secret For You")}
         </motion.h1>
 
         <motion.p 

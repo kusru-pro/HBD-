@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Mic, MicOff, Wind, ArrowRight, RotateCcw } from 'lucide-react';
+import { useAppConfig } from '../../context/AppConfigContext';
 import { fireGrandCelebration } from '../../utils/confetti';
 import { playBlowSound, playSuccessChime, playTapSound } from '../../utils/soundEffects';
 
@@ -11,6 +12,7 @@ export default function Screen4CakeBlow({
   allExtinguished, 
   setAllExtinguished 
 }) {
+  const { config } = useAppConfig();
   const [isBlowingHold, setIsBlowingHold] = useState(false);
   const [holdProgress, setHoldProgress] = useState(0);
   const [micActive, setMicActive] = useState(false);
@@ -344,10 +346,10 @@ export default function Screen4CakeBlow({
           >
             <div className="p-3 rounded-2xl bg-white/85 backdrop-blur-md border border-rosegold/30 shadow-soft-glow w-full">
               <p className="font-script text-2xl text-rosegold">
-                ✨ Close your eyes & make a wish ✨
+                {config?.cakeWishTitle || "✨ Close your eyes & make a wish ✨"}
               </p>
               <p className="text-xs text-plum/80 font-medium mt-1">
-                May every single dream in your heart find its way home.
+                {config?.cakeWishMessage || "May every single dream in your heart find its way home."}
               </p>
             </div>
 

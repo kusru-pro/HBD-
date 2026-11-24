@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Sparkles, Heart, ArrowRight, FastForward, RotateCcw } from 'lucide-react';
-import { CONFIG } from '../../config';
+import { useAppConfig } from '../../context/AppConfigContext';
 import { playTapSound, playSuccessChime } from '../../utils/soundEffects';
 import { firePastelConfetti } from '../../utils/confetti';
 
@@ -11,9 +11,9 @@ export default function Screen6Envelope({
   setIsOpen, 
   isTypingDone, 
   setIsTypingDone,
-  config
 }) {
-  const letterText = config?.letterText || CONFIG.letterText || '';
+  const { config } = useAppConfig();
+  const letterText = config?.letterText || '';
   const [displayedText, setDisplayedText] = useState(isTypingDone ? letterText : '');
   const textEndRef = useRef(null);
   const letterBoxRef = useRef(null);
