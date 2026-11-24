@@ -1,17 +1,25 @@
 import React, { useState } from 'react';
 import { Download, Upload, RotateCcw, AlertTriangle, Check, Cloud } from 'lucide-react';
-import { exportConfigAsJSON, importConfigFromJSON, resetStoredConfig } from '../../utils/storage';
-import { playTapSound, playSuccessChime } from '../../utils/soundEffects';
+import { useAppConfig } from '../../context/AppConfigContext';
+import { playTapSound, playSuccessChime, playErrorSound } from '../../utils/soundEffects';
 
 export default function TabSettings({ onResetCompleted }) {
+  const { config, replies, saveConfig, resetConfig } = useAppConfig();
   const [importText, setImportText] = useState('');
   const [statusMessage, setStatusMessage] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Handle Export
   const handleExport = () => {
     playTapSound();
     try {
-      const json = exportConfigAsJSON();
+      const data = {
+        config,
+        replies,
+        exportedAt: new Date().toISOString(),
+        version: "2.0-firestore"
+      };
+      const json = JSON.stringify(data, null, 2);
       const blob = new Blob([json], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -29,34 +37,50 @@ export default function TabSettings({ onResetCompleted }) {
     }
   };
 
-  // Handle Import
-  const handleImport = () => {
+  // Handle Import directly to Firestore
+  const handleImport = async () => {
     playTapSound();
     if (!importText.trim()) return;
 
+    setIsProcessing(true);
     try {
-      importConfigFromJSON(importText);
+      const parsed = JSON.parse(importText);
+      if (!parsed || (!parsed.config && typeof parsed !== 'object')) {
+        throw new Error("Invalid configuration file format.");
+      }
+      
+      const configToApply = parsed.config || parsed;
+      await saveConfig(configToApply);
+
       playSuccessChime();
-      setStatusMessage({ type: 'success', text: 'Config imported successfully! Reloading... ✨' });
+      setStatusMessage({ type: 'success', text: 'Config saved to Firestore successfully! ✨' });
       setImportText('');
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+      setTimeout(() => setStatusMessage(null), 4000);
     } catch (e) {
-      setStatusMessage({ type: 'error', text: 'Invalid JSON: ' + e.message });
+      playErrorSound();
+      setStatusMessage({ type: 'error', text: 'Import failed: ' + e.message });
+    } finally {
+      setIsProcessing(false);
     }
   };
 
-  // Handle Reset to Default
-  const handleReset = () => {
-    if (window.confirm("Are you sure you want to restore the default demo configuration? All custom edits will be reverted.")) {
+  // Handle Reset to Default directly in Firestore
+  const handleReset = async () => {
+    if (window.confirm("Are you sure you want to restore the default demo configuration in Firestore? All custom edits will be reverted.")) {
       playTapSound();
-      resetStoredConfig();
-      setStatusMessage({ type: 'success', text: 'Restored default settings! 🌸' });
-      setTimeout(() => {
+      setIsProcessing(true);
+      try {
+        await resetConfig();
+        playSuccessChime();
+        setStatusMessage({ type: 'success', text: 'Restored default settings in Firestore! 🌸' });
         onResetCompleted?.();
-        window.location.reload();
-      }, 1000);
+        setTimeout(() => setStatusMessage(null), 4000);
+      } catch (e) {
+        playErrorSound();
+        setStatusMessage({ type: 'error', text: 'Reset failed: ' + e.message });
+      } finally {
+        setIsProcessing(false);
+      }
     }
   };
 
@@ -69,7 +93,7 @@ export default function TabSettings({ onResetCompleted }) {
             ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
             : 'bg-rose-50 text-rose-800 border border-rose-200'
         }`}>
-          {statusMessage.type === 'success' ? <Check className="w-4 h-4 text-emerald-600" /> : <AlertTriangle className="w-4 h-4 text-rose-600" />}
+          {statusMessage.type === 'success' ? <Check className="w-4 h-4 text-emerald-600 shrink-0" /> : <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />}
           <span>{statusMessage.text}</span>
         </div>
       )}
@@ -100,28 +124,28 @@ export default function TabSettings({ onResetCompleted }) {
           <span>Import Configuration</span>
         </h4>
         <p className="text-[11px] text-plum/60 leading-relaxed">
-          Paste previously exported JSON content below to restore all your custom settings at once.
+          Paste exported JSON here to update Firestore directly:
         </p>
 
         <textarea
           rows={3}
           value={importText}
           onChange={(e) => setImportText(e.target.value)}
-          placeholder='Paste JSON here: { "config": { ... } }'
-          className="w-full p-2.5 rounded-xl bg-white border border-blush-200 text-xs text-plum font-mono resize-none focus:outline-none focus:ring-2 focus:ring-rosegold/40"
+          placeholder='{"config": { ... }}'
+          className="w-full px-3 py-2 rounded-xl bg-white border border-blush-200 text-xs font-mono text-plum focus:outline-none focus:ring-2 focus:ring-rosegold/40 resize-none"
         />
 
         <button
           onClick={handleImport}
-          disabled={!importText.trim()}
-          className={`w-full py-2 px-3 rounded-xl font-semibold text-xs border flex items-center justify-center gap-1.5 transition-colors ${
-            importText.trim()
-              ? 'bg-rosegold text-white border-rosegold hover:bg-rosegold-dark cursor-pointer shadow-sm'
+          disabled={!importText.trim() || isProcessing}
+          className={`w-full py-2.5 px-3 rounded-xl font-semibold text-xs border flex items-center justify-center gap-2 transition-colors shadow-sm ${
+            importText.trim() && !isProcessing
+              ? 'bg-gradient-to-r from-rosegold to-rosegold-light text-white border-rosegold hover:opacity-95'
               : 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
           }`}
         >
           <Upload className="w-3.5 h-3.5" />
-          <span>Apply Imported Config</span>
+          <span>{isProcessing ? 'Saving to Firestore...' : 'Apply & Save To Firestore ☁️'}</span>
         </button>
       </div>
 
@@ -129,10 +153,10 @@ export default function TabSettings({ onResetCompleted }) {
       <div className="p-4 rounded-2xl bg-blush-50/70 border border-rosegold/30 shadow-sm space-y-1.5">
         <div className="flex items-center gap-2">
           <Cloud className="w-4 h-4 text-rosegold" />
-          <h4 className="text-xs font-bold text-plum uppercase tracking-wider">Cloud Sync Ready</h4>
+          <h4 className="text-xs font-bold text-plum uppercase tracking-wider">100% Firebase Firestore Cloud Sync</h4>
         </div>
         <p className="text-[11px] text-plum/70 leading-relaxed">
-          Your changes and replies are persisted locally in <code>localStorage</code>. All functions in <code>src/utils/storage.js</code> are designed with a clean API, ready to hook into Firebase Firestore or Supabase if you want live cross-device sync!
+          The app is connected 100% to Firebase Cloud Firestore (<code>app_data/config</code>). Changes made here save directly to the cloud and sync in real time across any phone, tablet, or laptop.
         </p>
       </div>
 
@@ -143,15 +167,16 @@ export default function TabSettings({ onResetCompleted }) {
           <span>Reset Everything To Default</span>
         </h4>
         <p className="text-[11px] text-plum/60 leading-relaxed">
-          Restore all original demo texts, compliments, and default passcode (1205).
+          Restore all original demo texts, compliments, and default passcode (1205) in Firestore.
         </p>
 
         <button
           onClick={handleReset}
-          className="w-full py-2 px-3 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold text-xs border border-rose-200 flex items-center justify-center gap-1.5 transition-colors"
+          disabled={isProcessing}
+          className="w-full py-2 px-3 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold text-xs border border-rose-200 flex items-center justify-center gap-1.5 transition-colors disabled:opacity-50"
         >
           <RotateCcw className="w-3.5 h-3.5" />
-          <span>Reset All Content To Default</span>
+          <span>Reset All Content In Firestore</span>
         </button>
       </div>
     </div>

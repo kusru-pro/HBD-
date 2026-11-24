@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Shield, KeyRound, X, Eye, Save, Settings, Smartphone, 
-  Mail, MessageSquareHeart, Check, Sparkles, AlertCircle 
+  Mail, MessageSquareHeart, Check, Sparkles, AlertCircle, Loader2 
 } from 'lucide-react';
 import { useAppConfig } from '../../context/AppConfigContext';
 import { playTapSound, playSuccessChime, playErrorSound } from '../../utils/soundEffects';
@@ -14,7 +14,7 @@ import TabReplies from './TabReplies';
 import TabSettings from './TabSettings';
 
 export default function AdminDashboard({ isOpen, onClose, onConfigSaved }) {
-  const { config, saveConfig, adminPin, saveAdminPin, replies, resetConfig } = useAppConfig();
+  const { config, saveConfig, adminPin, saveAdminPin, replies, resetConfig, firestoreError } = useAppConfig();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [enteredPin, setEnteredPin] = useState('');
   const [pinError, setPinError] = useState('');
@@ -26,7 +26,9 @@ export default function AdminDashboard({ isOpen, onClose, onConfigSaved }) {
   // Working state copy of config and admin PIN
   const [editableConfig, setEditableConfig] = useState(config);
   const [editableAdminPin, setEditableAdminPin] = useState(adminPin);
+  const [isSaving, setIsSaving] = useState(false);
   const [saveToast, setSaveToast] = useState(false);
+  const [saveError, setSaveError] = useState(null);
 
   // Synchronize editable copy when modal is opened or when external config changes
   useEffect(() => {
@@ -66,17 +68,34 @@ export default function AdminDashboard({ isOpen, onClose, onConfigSaved }) {
     }));
   };
 
-  // 3. Save All Changes
-  const handleSaveAll = () => {
-    playSuccessChime();
-    saveConfig(editableConfig);
-    if (editableAdminPin && editableAdminPin.length >= 4) {
-      saveAdminPin(editableAdminPin);
-    }
-    onConfigSaved?.(editableConfig);
+  // 3. Save All Changes directly to Firestore (app_data/config)
+  const handleSaveAll = async () => {
+    setIsSaving(true);
+    setSaveError(null);
+    setSaveToast(false);
 
-    setSaveToast(true);
-    setTimeout(() => setSaveToast(false), 2500);
+    try {
+      const configToSave = {
+        ...editableConfig,
+        adminPin: editableAdminPin || '0000',
+      };
+      
+      // Write directly to Firestore via saveConfig
+      await saveConfig(configToSave);
+      
+      playSuccessChime();
+      setSaveToast(true);
+      onConfigSaved?.(configToSave);
+      setTimeout(() => setSaveToast(false), 3000);
+    } catch (err) {
+      console.error("Firestore Save Error:", err);
+      playErrorSound();
+      const errorCode = err?.code ? `[${err.code}] ` : '';
+      const errorMessage = err?.message || 'Unknown Firestore save error';
+      setSaveError(`${errorCode}${errorMessage}`);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleClose = () => {
@@ -214,6 +233,44 @@ export default function AdminDashboard({ isOpen, onClose, onConfigSaved }) {
               })}
             </div>
 
+            {/* On-screen Firestore Error Alert Banner */}
+            {saveError && (
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mx-4 mt-3 p-3 rounded-2xl bg-rose-50 border border-rose-300 text-rose-800 text-xs shadow-sm flex items-start justify-between gap-2"
+              >
+                <div className="flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-bold text-rose-700">Firestore Save Error ❌</p>
+                    <p className="font-mono text-[11px] text-rose-900 mt-0.5 break-all select-text">
+                      {saveError}
+                    </p>
+                    {saveError.includes('permission-denied') && (
+                      <p className="text-[10px] text-rose-600 mt-1 font-sans">
+                        💡 Tip: Make sure your Firestore Security Rules allow read/write (e.g. <code>allow read, write: if true;</code>).
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSaveError(null)}
+                  className="text-rose-500 hover:text-rose-700 font-bold text-sm px-1"
+                >
+                  ✕
+                </button>
+              </motion.div>
+            )}
+
+            {firestoreError && !saveError && (
+              <div className="mx-4 mt-3 p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-[11px] flex items-center gap-2">
+                <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                <span>Firestore Notice: {firestoreError}</span>
+              </div>
+            )}
+
             {/* Tab Body View */}
             <div className="p-4 overflow-y-auto flex-1 custom-scrollbar max-h-[calc(92dvh-175px)]">
               {activeTab === 'general' && (
@@ -266,7 +323,17 @@ export default function AdminDashboard({ isOpen, onClose, onConfigSaved }) {
                       className="flex items-center gap-1 text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200"
                     >
                       <Check className="w-3 h-3 text-emerald-600" />
-                      <span>Saved! ✨</span>
+                      <span>Saved to Firestore! ✨</span>
+                    </motion.div>
+                  )}
+                  {saveError && (
+                    <motion.div
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="flex items-center gap-1 text-[11px] font-bold text-rose-600 bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200"
+                    >
+                      <AlertCircle className="w-3 h-3 text-rose-600" />
+                      <span>Save failed! See error above ❌</span>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -282,13 +349,27 @@ export default function AdminDashboard({ isOpen, onClose, onConfigSaved }) {
                 </button>
 
                 <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.96 }}
+                  whileHover={{ scale: isSaving ? 1 : 1.03 }}
+                  whileTap={{ scale: isSaving ? 1 : 0.96 }}
+                  disabled={isSaving}
                   onClick={handleSaveAll}
-                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-rosegold via-rosegold-light to-rosegold text-white font-bold text-xs shadow-rose-glow flex items-center gap-1.5 border border-white/40"
+                  className={`px-5 py-2 rounded-xl text-white font-bold text-xs shadow-rose-glow flex items-center gap-1.5 border border-white/40 transition-all ${
+                    isSaving 
+                      ? 'bg-rosegold/70 cursor-not-allowed opacity-80' 
+                      : 'bg-gradient-to-r from-rosegold via-rosegold-light to-rosegold'
+                  }`}
                 >
-                  <Save className="w-3.5 h-3.5" />
-                  <span>Save Changes</span>
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Saving to Firestore...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-3.5 h-3.5" />
+                      <span>Save to Firestore ☁️</span>
+                    </>
+                  )}
                 </motion.button>
               </div>
             </div>

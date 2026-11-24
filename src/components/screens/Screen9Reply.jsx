@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Heart, Send, CheckCircle2, RotateCcw, MessageCircle } from 'lucide-react';
+import { Sparkles, Heart, Send, CheckCircle2, RotateCcw, MessageCircle, Loader2, AlertCircle } from 'lucide-react';
 import { useAppConfig } from '../../context/AppConfigContext';
 import { firePastelConfetti } from '../../utils/confetti';
 import { playTapSound, playSuccessChime } from '../../utils/soundEffects';
@@ -20,27 +20,39 @@ export default function Screen9Reply({ onReplay }) {
   const [message, setMessage] = useState('');
   const [isSent, setIsSent] = useState(false);
   const [sentDetails, setSentDetails] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [sendError, setSendError] = useState(null);
 
   const handleSendReply = async (e) => {
     e.preventDefault();
-    if (!message.trim()) return;
+    if (!message.trim() || isSubmitting) return;
 
-    playSuccessChime();
-    firePastelConfetti({ x: 0.5, y: 0.5 });
+    setIsSubmitting(true);
+    setSendError(null);
 
-    const saved = await addReply({
-      mood: selectedMood.label,
-      message: message.trim(),
-      timestamp: new Date().toISOString(),
-    });
+    try {
+      const saved = await addReply({
+        mood: selectedMood.label,
+        message: message.trim(),
+        timestamp: new Date().toISOString(),
+      });
 
-    setSentDetails(saved);
-    setIsSent(true);
+      playSuccessChime();
+      firePastelConfetti({ x: 0.5, y: 0.5 });
+      setSentDetails(saved);
+      setIsSent(true);
+    } catch (err) {
+      console.error("Failed to send reply to Firestore:", err);
+      setSendError(err?.message || "Failed to send reply. Please check connection.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleWriteAnother = () => {
     playTapSound();
     setMessage('');
+    setSendError(null);
     setIsSent(false);
   };
 
@@ -136,21 +148,38 @@ export default function Screen9Reply({ onReplay }) {
                 </span>
               </div>
 
+              {/* Error Message if Send fails */}
+              {sendError && (
+                <div className="w-full mt-2.5 p-2 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-[11px] flex items-center gap-1.5 text-left">
+                  <AlertCircle className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                  <span className="break-all">{sendError}</span>
+                </div>
+              )}
+
               {/* Single Clean Send Reply Action Button */}
               <div className="w-full mt-3">
                 <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.96 }}
+                  whileHover={{ scale: isSubmitting || !message.trim() ? 1 : 1.03 }}
+                  whileTap={{ scale: isSubmitting || !message.trim() ? 1 : 0.96 }}
                   onClick={handleSendReply}
-                  disabled={!message.trim()}
+                  disabled={!message.trim() || isSubmitting}
                   className={`w-full py-3.5 px-4 rounded-xl font-bold text-xs shadow-rose-glow flex items-center justify-center gap-2 border transition-all ${
-                    message.trim()
+                    message.trim() && !isSubmitting
                       ? 'bg-gradient-to-r from-rosegold via-rosegold-light to-rosegold text-white border-white/50 cursor-pointer animate-pulse-slow'
                       : 'bg-slate-200 text-slate-400 border-transparent cursor-not-allowed shadow-none'
                   }`}
                 >
-                  <Send className="w-3.5 h-3.5" />
-                  <span>Send Reply 💌</span>
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Sending to Firestore...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-3.5 h-3.5" />
+                      <span>Send Reply 💌</span>
+                    </>
+                  )}
                 </motion.button>
               </div>
             </motion.div>
