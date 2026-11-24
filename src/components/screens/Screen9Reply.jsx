@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Heart, Send, Instagram, CheckCircle2, RotateCcw, Copy, Check } from 'lucide-react';
+import { Sparkles, Heart, Send, CheckCircle2, RotateCcw } from 'lucide-react';
 import { saveNewReply } from '../../utils/storage';
 import { firePastelConfetti } from '../../utils/confetti';
 import { playTapSound, playSuccessChime } from '../../utils/soundEffects';
@@ -19,10 +19,6 @@ export default function Screen9Reply({ config, onReplay }) {
   const [message, setMessage] = useState('');
   const [isSent, setIsSent] = useState(false);
   const [sentDetails, setSentDetails] = useState(null);
-  const [igToast, setIgToast] = useState(false);
-
-  const recipient = config.recipientName || 'Birthday Girl';
-  const rawIgHandle = (config.instagramHandle || '').replace('@', '').trim();
 
   const handleSendReply = (e) => {
     e.preventDefault();
@@ -38,27 +34,6 @@ export default function Screen9Reply({ config, onReplay }) {
 
     setSentDetails(saved);
     setIsSent(true);
-  };
-
-  const handleInstagramSend = () => {
-    playTapSound();
-    const textToSend = `Happy Birthday Surprise Reply! 💌\nMood: ${selectedMood.label}\n\n"${message.trim() || 'Loved it so much! 💖'}"\n\n— From ${recipient} ✨`;
-
-    // Copy formatted message to clipboard for easy pasting in Instagram DM
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(textToSend);
-      setIgToast(true);
-      setTimeout(() => setIgToast(false), 3000);
-    }
-
-    // Direct link to user's Instagram DM / Profile
-    const igUrl = rawIgHandle 
-      ? `https://ig.me/m/${rawIgHandle}`
-      : `https://instagram.com/direct/inbox/`;
-
-    setTimeout(() => {
-      window.open(igUrl, '_blank');
-    }, 400);
   };
 
   const handleWriteAnother = () => {
@@ -89,23 +64,6 @@ export default function Screen9Reply({ config, onReplay }) {
             : "Write whatever is on your mind or in your heart right now."
           }
         </p>
-
-        {/* Copy toast feedback */}
-        <div className="h-6 flex items-center justify-center mt-1">
-          <AnimatePresence>
-            {igToast && (
-              <motion.div
-                initial={{ opacity: 0, y: -5, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -5, scale: 0.95 }}
-                className="px-3 py-0.5 rounded-full bg-gradient-to-r from-[#F58529]/10 via-[#DD2A7B]/10 to-[#8134AF]/10 text-[#C13584] text-[11px] font-bold border border-[#E1306C]/30 shadow-sm flex items-center gap-1"
-              >
-                <Check className="w-3 h-3 text-[#E1306C]" />
-                <span>Message copied! Opening Instagram DM... 📸</span>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
       </div>
 
       {/* Main Postcard Card */}
@@ -176,34 +134,22 @@ export default function Screen9Reply({ config, onReplay }) {
                 </span>
               </div>
 
-              {/* Action Buttons */}
-              <div className="w-full flex flex-col gap-2 mt-3">
+              {/* Single Clean Send Reply Action Button */}
+              <div className="w-full mt-3">
                 <motion.button
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.96 }}
                   onClick={handleSendReply}
                   disabled={!message.trim()}
-                  className={`w-full py-3 px-4 rounded-xl font-bold text-xs shadow-rose-glow flex items-center justify-center gap-2 border transition-all ${
+                  className={`w-full py-3.5 px-4 rounded-xl font-bold text-xs shadow-rose-glow flex items-center justify-center gap-2 border transition-all ${
                     message.trim()
-                      ? 'bg-gradient-to-r from-rosegold via-rosegold-light to-rosegold text-white border-white/50 cursor-pointer'
+                      ? 'bg-gradient-to-r from-rosegold via-rosegold-light to-rosegold text-white border-white/50 cursor-pointer animate-pulse-slow'
                       : 'bg-slate-200 text-slate-400 border-transparent cursor-not-allowed shadow-none'
                   }`}
                 >
                   <Send className="w-3.5 h-3.5" />
                   <span>Send Reply 💌</span>
                 </motion.button>
-
-                {/* Secondary Instagram DM Button */}
-                <button
-                  type="button"
-                  onClick={handleInstagramSend}
-                  className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-[#F58529]/10 via-[#DD2A7B]/10 to-[#8134AF]/10 hover:from-[#F58529]/20 hover:via-[#DD2A7B]/20 hover:to-[#8134AF]/20 text-[#C13584] font-semibold text-xs border border-[#E1306C]/30 flex items-center justify-center gap-1.5 transition-all shadow-sm"
-                >
-                  <Instagram className="w-3.5 h-3.5 text-[#E1306C]" />
-                  <span>
-                    {rawIgHandle ? `Send on Instagram DM (@${rawIgHandle}) 📸` : 'Send on Instagram DM 📸'}
-                  </span>
-                </button>
               </div>
             </motion.div>
           ) : (
@@ -240,21 +186,12 @@ export default function Screen9Reply({ config, onReplay }) {
                 </p>
               </div>
 
-              {/* Action Buttons in Confirmation */}
-              <div className="w-full flex flex-col gap-2">
-                <button
-                  type="button"
-                  onClick={handleInstagramSend}
-                  className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-[#F58529]/15 via-[#DD2A7B]/15 to-[#8134AF]/15 hover:from-[#F58529]/25 hover:via-[#DD2A7B]/25 hover:to-[#8134AF]/25 text-[#C13584] font-semibold text-xs border border-[#E1306C]/30 flex items-center justify-center gap-1.5 transition-all shadow-sm"
-                >
-                  <Instagram className="w-3.5 h-3.5 text-[#E1306C]" />
-                  <span>Also Share on Instagram DM 📸</span>
-                </button>
-
+              {/* Action Button in Confirmation */}
+              <div className="w-full">
                 <button
                   type="button"
                   onClick={handleWriteAnother}
-                  className="w-full py-2 px-3 rounded-xl bg-white/70 hover:bg-white text-plum/70 font-medium text-xs border border-plum/10 transition-colors"
+                  className="w-full py-2.5 px-4 rounded-xl bg-blush-100/70 hover:bg-blush-200 text-plum font-semibold text-xs border border-blush-200 transition-colors"
                 >
                   Write another note ✏️
                 </button>
