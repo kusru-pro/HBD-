@@ -8,8 +8,8 @@ export const CONFIG = {
   passcode: "1205",
   passcodeHint: "Enter your special date 💖",
 
-  // WhatsApp number for Screen 9 direct reply (e.g., 919876543210 with country code, no + or dashes)
-  whatsappNumber: "",
+  // Instagram username for Screen 9 direct DM reply (e.g. your_instagram_id without @)
+  instagramHandle: "",
 
   // Screen 2 Welcome prompt
   welcomeSubtitle: "Today is all about celebrating the most radiant, wonderful person in the world.",

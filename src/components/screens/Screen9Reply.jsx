@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Heart, Send, MessageCircle, CheckCircle2, RotateCcw } from 'lucide-react';
+import { Sparkles, Heart, Send, Instagram, CheckCircle2, RotateCcw, Copy, Check } from 'lucide-react';
 import { saveNewReply } from '../../utils/storage';
 import { firePastelConfetti } from '../../utils/confetti';
 import { playTapSound, playSuccessChime } from '../../utils/soundEffects';
@@ -19,9 +19,10 @@ export default function Screen9Reply({ config, onReplay }) {
   const [message, setMessage] = useState('');
   const [isSent, setIsSent] = useState(false);
   const [sentDetails, setSentDetails] = useState(null);
+  const [igToast, setIgToast] = useState(false);
 
   const recipient = config.recipientName || 'Birthday Girl';
-  const whatsappNumber = (config.whatsappNumber || '').replace(/[^0-9]/g, '');
+  const rawIgHandle = (config.instagramHandle || '').replace('@', '').trim();
 
   const handleSendReply = (e) => {
     e.preventDefault();
@@ -39,16 +40,25 @@ export default function Screen9Reply({ config, onReplay }) {
     setIsSent(true);
   };
 
-  const handleWhatsAppSend = () => {
+  const handleInstagramSend = () => {
     playTapSound();
-    const textToSend = `Happy Birthday Surprise Reply! 💌\n\nMood: ${selectedMood.label}\n\n"${message.trim() || 'Thank you for this beautiful surprise! 💖'}"\n\nFrom ${recipient} ✨`;
-    const encoded = encodeURIComponent(textToSend);
+    const textToSend = `Happy Birthday Surprise Reply! 💌\nMood: ${selectedMood.label}\n\n"${message.trim() || 'Loved it so much! 💖'}"\n\n— From ${recipient} ✨`;
 
-    const url = whatsappNumber 
-      ? `https://wa.me/${whatsappNumber}?text=${encoded}`
-      : `https://api.whatsapp.com/send?text=${encoded}`;
+    // Copy formatted message to clipboard for easy pasting in Instagram DM
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(textToSend);
+      setIgToast(true);
+      setTimeout(() => setIgToast(false), 3000);
+    }
 
-    window.open(url, '_blank');
+    // Direct link to user's Instagram DM / Profile
+    const igUrl = rawIgHandle 
+      ? `https://ig.me/m/${rawIgHandle}`
+      : `https://instagram.com/direct/inbox/`;
+
+    setTimeout(() => {
+      window.open(igUrl, '_blank');
+    }, 400);
   };
 
   const handleWriteAnother = () => {
@@ -79,6 +89,23 @@ export default function Screen9Reply({ config, onReplay }) {
             : "Write whatever is on your mind or in your heart right now."
           }
         </p>
+
+        {/* Copy toast feedback */}
+        <div className="h-6 flex items-center justify-center mt-1">
+          <AnimatePresence>
+            {igToast && (
+              <motion.div
+                initial={{ opacity: 0, y: -5, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -5, scale: 0.95 }}
+                className="px-3 py-0.5 rounded-full bg-gradient-to-r from-[#F58529]/10 via-[#DD2A7B]/10 to-[#8134AF]/10 text-[#C13584] text-[11px] font-bold border border-[#E1306C]/30 shadow-sm flex items-center gap-1"
+              >
+                <Check className="w-3 h-3 text-[#E1306C]" />
+                <span>Message copied! Opening Instagram DM... 📸</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
       {/* Main Postcard Card */}
@@ -166,14 +193,16 @@ export default function Screen9Reply({ config, onReplay }) {
                   <span>Send Reply 💌</span>
                 </motion.button>
 
-                {/* Secondary WhatsApp Button */}
+                {/* Secondary Instagram DM Button */}
                 <button
                   type="button"
-                  onClick={handleWhatsAppSend}
-                  className="w-full py-2.5 px-3 rounded-xl bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#128C7E] font-semibold text-xs border border-[#25D366]/30 flex items-center justify-center gap-1.5 transition-colors"
+                  onClick={handleInstagramSend}
+                  className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-[#F58529]/10 via-[#DD2A7B]/10 to-[#8134AF]/10 hover:from-[#F58529]/20 hover:via-[#DD2A7B]/20 hover:to-[#8134AF]/20 text-[#C13584] font-semibold text-xs border border-[#E1306C]/30 flex items-center justify-center gap-1.5 transition-all shadow-sm"
                 >
-                  <MessageCircle className="w-3.5 h-3.5 text-[#25D366]" />
-                  <span>Send on WhatsApp 💬</span>
+                  <Instagram className="w-3.5 h-3.5 text-[#E1306C]" />
+                  <span>
+                    {rawIgHandle ? `Send on Instagram DM (@${rawIgHandle}) 📸` : 'Send on Instagram DM 📸'}
+                  </span>
                 </button>
               </div>
             </motion.div>
@@ -215,11 +244,11 @@ export default function Screen9Reply({ config, onReplay }) {
               <div className="w-full flex flex-col gap-2">
                 <button
                   type="button"
-                  onClick={handleWhatsAppSend}
-                  className="w-full py-2.5 px-3 rounded-xl bg-[#25D366]/15 hover:bg-[#25D366]/25 text-[#128C7E] font-semibold text-xs border border-[#25D366]/30 flex items-center justify-center gap-1.5 transition-colors"
+                  onClick={handleInstagramSend}
+                  className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-[#F58529]/15 via-[#DD2A7B]/15 to-[#8134AF]/15 hover:from-[#F58529]/25 hover:via-[#DD2A7B]/25 hover:to-[#8134AF]/25 text-[#C13584] font-semibold text-xs border border-[#E1306C]/30 flex items-center justify-center gap-1.5 transition-all shadow-sm"
                 >
-                  <MessageCircle className="w-3.5 h-3.5 text-[#25D366]" />
-                  <span>Also Share on WhatsApp 💬</span>
+                  <Instagram className="w-3.5 h-3.5 text-[#E1306C]" />
+                  <span>Also Share on Instagram DM 📸</span>
                 </button>
 
                 <button
