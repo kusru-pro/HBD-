@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { 
   getStoredConfig, saveStoredConfig, getAdminPin, saveAdminPin, 
-  getStoredReplies 
+  getStoredReplies, fetchLatestReplies 
 } from '../../utils/storage';
 import { playTapSound, playSuccessChime, playErrorSound } from '../../utils/soundEffects';
 
@@ -37,8 +37,20 @@ export default function AdminDashboard({ isOpen, onClose, onConfigSaved }) {
       setEditableConfig(getStoredConfig());
       setEditableAdminPin(getAdminPin());
       setReplies(getStoredReplies());
+      fetchLatestReplies().then(data => {
+        if (data) setReplies(data);
+      });
     }
   }, [isOpen]);
+
+  // Live real-time update listener
+  useEffect(() => {
+    const handleUpdate = (e) => {
+      if (e.detail) setReplies(e.detail);
+    };
+    window.addEventListener('hbd_replies_updated', handleUpdate);
+    return () => window.removeEventListener('hbd_replies_updated', handleUpdate);
+  }, []);
 
   if (!isOpen) return null;
 

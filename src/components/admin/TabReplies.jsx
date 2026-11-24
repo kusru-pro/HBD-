@@ -1,10 +1,26 @@
-import React, { useState } from 'react';
-import { MessageSquareHeart, Trash2, Copy, Check, Clock, Sparkles } from 'lucide-react';
-import { deleteStoredReply, clearAllReplies } from '../../utils/storage';
-import { playTapSound } from '../../utils/soundEffects';
+import React, { useState, useEffect } from 'react';
+import { MessageSquareHeart, Trash2, Copy, Check, Clock, Sparkles, RefreshCw } from 'lucide-react';
+import { deleteStoredReply, clearAllReplies, fetchLatestReplies } from '../../utils/storage';
+import { playTapSound, playSuccessChime } from '../../utils/soundEffects';
 
 export default function TabReplies({ replies, onRepliesUpdated }) {
   const [copiedId, setCopiedId] = useState(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Auto-fetch latest replies from server on mount
+  useEffect(() => {
+    fetchLatestReplies().then(() => {
+      onRepliesUpdated?.();
+    });
+  }, []);
+
+  const handleRefresh = async () => {
+    playTapSound();
+    setIsRefreshing(true);
+    await fetchLatestReplies();
+    onRepliesUpdated?.();
+    setTimeout(() => setIsRefreshing(false), 600);
+  };
 
   const handleCopy = (item) => {
     playTapSound();
@@ -48,14 +64,25 @@ export default function TabReplies({ replies, onRepliesUpdated }) {
           </div>
         </div>
 
-        {replies.length > 0 && (
+        <div className="flex items-center gap-1.5">
           <button
-            onClick={handleClearAll}
-            className="text-[10px] font-semibold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 px-2.5 py-1 rounded-lg border border-rose-200 transition-colors"
+            onClick={handleRefresh}
+            className="flex items-center gap-1 text-[10px] font-semibold text-rosegold hover:text-rosegold-dark bg-blush-50 hover:bg-blush-100 px-2.5 py-1 rounded-lg border border-rosegold/30 transition-colors"
+            title="Fetch latest from server"
           >
-            Clear All
+            <RefreshCw className={`w-3 h-3 ${isRefreshing ? 'animate-spin' : ''}`} />
+            <span>Refresh</span>
           </button>
-        )}
+
+          {replies.length > 0 && (
+            <button
+              onClick={handleClearAll}
+              className="text-[10px] font-semibold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 px-2.5 py-1 rounded-lg border border-rose-200 transition-colors"
+            >
+              Clear All
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Replies List */}
@@ -70,6 +97,13 @@ export default function TabReplies({ replies, onRepliesUpdated }) {
           <p className="text-xs text-plum/60 max-w-[240px] leading-relaxed">
             When she finishes the surprise and sends a sweet note on Screen 9, it will appear here immediately! 💌
           </p>
+          <button
+            onClick={handleRefresh}
+            className="mt-3 text-xs font-semibold text-rosegold bg-white px-3 py-1 rounded-full border border-rosegold/30 shadow-sm flex items-center gap-1.5"
+          >
+            <RefreshCw className="w-3 h-3" />
+            <span>Check for new replies</span>
+          </button>
         </div>
       ) : (
         <div className="space-y-3 max-h-[420px] overflow-y-auto pr-1 custom-scrollbar">
