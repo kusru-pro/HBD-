@@ -5,7 +5,7 @@ import {
   collection, doc, setDoc, deleteDoc, onSnapshot, query, orderBy 
 } from 'firebase/firestore';
 
-export const STORAGE_KEYS = {
+const STORAGE_KEYS = {
   DATA: 'birthday_app_data_v1',
   REPLIES: 'birthday_app_replies_v1',
   ADMIN_PIN: 'birthday_app_admin_pin',
