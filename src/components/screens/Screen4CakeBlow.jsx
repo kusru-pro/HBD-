@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Mic, MicOff, Wind, ArrowRight, RotateCcw } from 'lucide-react';
+import { Sparkles, Wind, ArrowRight, RotateCcw } from 'lucide-react';
 import { useAppConfig } from '../../context/AppConfigContext';
 import { fireGrandCelebration } from '../../utils/confetti';
 import { playBlowSound, playSuccessChime, playTapSound } from '../../utils/soundEffects';
@@ -15,109 +15,18 @@ export default function Screen4CakeBlow({
   const { config } = useAppConfig();
   const [isBlowingHold, setIsBlowingHold] = useState(false);
   const [holdProgress, setHoldProgress] = useState(0);
-  const [micActive, setMicActive] = useState(false);
-  const [micError, setMicError] = useState(false);
 
-  const holdIntervalRef = useRef(null);
-  const audioContextRef = useRef(null);
-  const analyserRef = useRef(null);
-  const micStreamRef = useRef(null);
+  const holdStartTimeRef = useRef(0);
   const animFrameRef = useRef(null);
 
-  // Initialize Microphone blowing detection
-  const startMicDetection = async () => {
-    if (allExtinguished) return;
+  const HOLD_DURATION = 1500; // ~1.5s hold time
 
-    try {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        setMicError(true);
-        return;
-      }
-
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        audio: { echoCancellation: true, noiseSuppression: false } 
-      });
-      micStreamRef.current = stream;
-
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      const ctx = new AudioCtx();
-      audioContextRef.current = ctx;
-
-      const source = ctx.createMediaStreamSource(stream);
-      const analyser = ctx.createAnalyser();
-      analyser.fftSize = 256;
-      analyser.smoothingTimeConstant = 0.3;
-      source.connect(analyser);
-      analyserRef.current = analyser;
-
-      setMicActive(true);
-      setMicError(false);
-
-      const bufferLength = analyser.frequencyBinCount;
-      const dataArray = new Uint8Array(bufferLength);
-      let blowStreak = 0;
-
-      const checkAudio = () => {
-        if (!analyserRef.current) return;
-        analyserRef.current.getByteFrequencyData(dataArray);
-
-        // Sum volume across mid/high frequencies typical of blowing noise
-        let sum = 0;
-        for (let i = 10; i < bufferLength; i++) {
-          sum += dataArray[i];
-        }
-        const average = sum / (bufferLength - 10);
-
-        if (average > 48) { // Sound threshold for blowing
-          blowStreak += 1;
-          if (blowStreak > 6) { // ~200-300ms sustained
-            extinguishAllCandles();
-            return;
-          }
-        } else {
-          blowStreak = Math.max(0, blowStreak - 1);
-        }
-
-        animFrameRef.current = requestAnimationFrame(checkAudio);
-      };
-
-      checkAudio();
-    } catch (err) {
-      console.log("Mic detection not available:", err);
-      setMicError(true);
-      setMicActive(false);
-    }
-  };
-
-  const stopMicDetection = () => {
-    if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
-    if (micStreamRef.current) {
-      micStreamRef.current.getTracks().forEach(track => track.stop());
-      micStreamRef.current = null;
-    }
-    if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
-      audioContextRef.current.close();
-      audioContextRef.current = null;
-    }
-    setMicActive(false);
-  };
-
-  useEffect(() => {
-    if (!allExtinguished) {
-      startMicDetection();
-    }
-    return () => {
-      stopMicDetection();
-    };
-  }, [allExtinguished]);
-
-  // Extinguish all candles with celebration
+  // Extinguish all candles with celebratory sound and confetti
   const extinguishAllCandles = () => {
     if (allExtinguished) return;
     playBlowSound();
     setCandlesLit([false, false, false]);
     setAllExtinguished(true);
-    stopMicDetection();
 
     setTimeout(() => {
       playSuccessChime();
@@ -130,39 +39,53 @@ export default function Screen4CakeBlow({
     playTapSound();
     setCandlesLit([true, true, true]);
     setAllExtinguished(false);
+    setHoldProgress(0);
   };
 
-  // Hold-to-blow fallback interactions
+  // Ultra-smooth 60fps Hold-to-blow interaction using pointer events
   const handleHoldStart = (e) => {
     if (allExtinguished) return;
-    e.preventDefault();
+    if (e.cancelable) e.preventDefault();
+
     setIsBlowingHold(true);
     setHoldProgress(0);
+    holdStartTimeRef.current = Date.now();
 
-    const startTime = Date.now();
-    const duration = 1200; // 1.2s hold
-
-    holdIntervalRef.current = setInterval(() => {
-      const elapsed = Date.now() - startTime;
-      const progress = Math.min(100, (elapsed / duration) * 100);
+    const updateLoop = () => {
+      const elapsed = Date.now() - holdStartTimeRef.current;
+      const progress = Math.min(100, (elapsed / HOLD_DURATION) * 100);
       setHoldProgress(progress);
 
       if (progress >= 100) {
-        clearInterval(holdIntervalRef.current);
         setIsBlowingHold(false);
         extinguishAllCandles();
+      } else {
+        animFrameRef.current = requestAnimationFrame(updateLoop);
       }
-    }, 30);
+    };
+
+    if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+    animFrameRef.current = requestAnimationFrame(updateLoop);
   };
 
   const handleHoldEnd = () => {
     if (allExtinguished) return;
+    if (animFrameRef.current) {
+      cancelAnimationFrame(animFrameRef.current);
+      animFrameRef.current = null;
+    }
     setIsBlowingHold(false);
     setHoldProgress(0);
-    if (holdIntervalRef.current) {
-      clearInterval(holdIntervalRef.current);
-    }
   };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (animFrameRef.current) {
+        cancelAnimationFrame(animFrameRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="flex flex-col items-center justify-between min-h-[calc(100dvh-90px)] px-4 py-3 w-full max-w-[420px] mx-auto text-center select-none">
@@ -183,26 +106,9 @@ export default function Screen4CakeBlow({
         <p className="text-xs text-plum/70 font-medium max-w-[280px]">
           {allExtinguished 
             ? "Your wish has been cast! You can relight the candles or proceed to the next surprise."
-            : "Blow into your microphone or hold the button below to blow out your birthday candles!"
+            : "Press and hold the glowing button below to blow out your birthday candles! 🌬️"
           }
         </p>
-
-        {/* Mic Status Badge */}
-        {!allExtinguished && (
-          <div className="mt-2 flex items-center justify-center">
-            {micActive ? (
-              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                <Mic className="w-3 h-3 animate-pulse text-emerald-600" />
-                Mic listening: blow softly 🌬️
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-plum/50 bg-white/60 px-2.5 py-0.5 rounded-full border border-white/80">
-                <Wind className="w-3 h-3" />
-                Use button or tap candles
-              </span>
-            )}
-          </div>
-        )}
       </div>
 
       {/* Layered Strawberry Cream Cake Illustration */}
@@ -235,17 +141,29 @@ export default function Screen4CakeBlow({
                     {isLit ? (
                       <motion.div
                         key="flame"
-                        animate={{
-                          scaleY: [1, 1.25, 0.95, 1.15, 1],
-                          scaleX: [1, 0.88, 1.05, 0.92, 1],
-                          rotate: [-3, 3, -2, 2, 0],
-                        }}
+                        animate={
+                          isBlowingHold
+                            ? {
+                                scaleY: [0.75, 0.45, 0.8, 0.5],
+                                scaleX: [1.3, 1.55, 1.25, 1.6],
+                                rotate: [18, 30, 22, 34],
+                                x: [3, 8, 5, 9],
+                                opacity: [0.95, 0.65, 0.9, 0.55],
+                              }
+                            : {
+                                scaleY: [1, 1.25, 0.95, 1.15, 1],
+                                scaleX: [1, 0.88, 1.05, 0.92, 1],
+                                rotate: [-3, 3, -2, 2, 0],
+                                x: 0,
+                                opacity: 1,
+                              }
+                        }
                         transition={{
-                          duration: 1.2 + idx * 0.2,
+                          duration: isBlowingHold ? 0.22 : 1.2 + idx * 0.2,
                           repeat: Infinity,
                           ease: "easeInOut",
                         }}
-                        className="w-4 h-8 rounded-full candle-flame relative -top-1"
+                        className="w-4 h-8 rounded-full candle-flame relative -top-1 origin-bottom"
                       >
                         {/* Inner white glow */}
                         <div className="absolute bottom-1 left-1.5 w-1.5 h-3 bg-white/90 rounded-full blur-[0.5px]" />
@@ -312,30 +230,33 @@ export default function Screen4CakeBlow({
       <div className="w-full max-w-[320px] pb-4 flex flex-col items-center">
         {!allExtinguished ? (
           <div className="w-full flex flex-col items-center">
-            {/* Hold to Blow Button */}
+            {/* Prominent Hold to Blow Button */}
             <div className="relative w-full flex items-center justify-center">
-              <motion.button
-                onMouseDown={handleHoldStart}
-                onMouseUp={handleHoldEnd}
-                onTouchStart={handleHoldStart}
-                onTouchEnd={handleHoldEnd}
-                whileTap={{ scale: 0.96 }}
-                className="relative overflow-hidden w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-[#D81B60] via-[#E11D48] to-[#9C27B0] text-white font-bold text-sm shadow-lg shadow-rose-500/30 border border-white/20 flex items-center justify-center gap-2 select-none"
+              <button
+                type="button"
+                onPointerDown={handleHoldStart}
+                onPointerUp={handleHoldEnd}
+                onPointerLeave={handleHoldEnd}
+                onPointerCancel={handleHoldEnd}
+                onContextMenu={(e) => e.preventDefault()}
+                className="relative overflow-hidden w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-[#D81B60] via-[#E11D48] to-[#9C27B0] text-white font-bold text-sm shadow-lg shadow-rose-500/30 border border-white/25 flex items-center justify-center gap-2 select-none touch-none cursor-pointer active:scale-[0.98] transition-transform"
+                style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none' }}
               >
+                {/* Smooth Filling Progress Bar Highlight */}
                 <div
-                  className="absolute inset-0 bg-white/30 transition-all duration-75 origin-left"
+                  className="absolute inset-0 bg-white/35 transition-[width] duration-75 ease-linear origin-left"
                   style={{ width: `${holdProgress}%` }}
                 />
 
                 <Wind className={`w-4 h-4 text-white relative z-10 ${isBlowingHold ? 'animate-bounce' : ''}`} />
-                <span className="relative z-10 text-white font-bold">
-                  {isBlowingHold ? 'Blowing... Keep Holding 🌬️' : 'Hold to Blow Candles 🌬️'}
+                <span className="relative z-10 text-white font-bold tracking-wide">
+                  {isBlowingHold ? `Blowing... ${Math.round(holdProgress)}% 🌬️` : 'Hold to Blow Candles 🌬️'}
                 </span>
-              </motion.button>
+              </button>
             </div>
 
-            <p className="text-[11px] text-plum/50 mt-2 font-medium">
-              Tip: You can also tap each candle to blow it out 🎂
+            <p className="text-[11px] text-plum/60 mt-2.5 font-medium">
+              {isBlowingHold ? "Keep holding until candles go out! ✨" : "Press and hold for 1.5s to blow out candles"}
             </p>
           </div>
         ) : (
@@ -344,11 +265,11 @@ export default function Screen4CakeBlow({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             className="w-full flex flex-col items-center gap-2"
           >
-            <div className="p-3 rounded-2xl bg-white/85 backdrop-blur-md border border-rosegold/30 shadow-soft-glow w-full">
-              <p className="font-script text-2xl text-rosegold">
+            <div className="p-3.5 rounded-2xl bg-white/90 backdrop-blur-md border border-rose-300 shadow-soft-glow w-full">
+              <p className="font-script text-2xl text-[#D81B60] font-bold">
                 {config?.cakeWishTitle || "✨ Close your eyes & make a wish ✨"}
               </p>
-              <p className="text-xs text-plum/80 font-medium mt-1">
+              <p className="text-xs text-plum/85 font-medium mt-1">
                 {config?.cakeWishMessage || "May every single dream in your heart find its way home."}
               </p>
             </div>
@@ -360,6 +281,7 @@ export default function Screen4CakeBlow({
               className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-[#D81B60] via-[#E11D48] to-[#9C27B0] text-white font-bold text-sm shadow-lg shadow-rose-500/30 flex items-center justify-center gap-2 border border-white/20"
             >
               <span>Continue Surprise →</span>
+              <ArrowRight className="w-4 h-4 stroke-[2.5]" />
             </motion.button>
 
             {/* Relight button */}
