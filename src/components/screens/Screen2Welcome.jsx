@@ -157,10 +157,10 @@ export default function Screen2Welcome({ onNext }) {
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.96 }}
             onClick={handleYes}
-            className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-rosegold via-rosegold-light to-rosegold text-white font-bold text-sm shadow-rose-glow flex items-center justify-center gap-2 border border-white/50 active:shadow-inner"
+            className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-[#D81B60] via-[#E11D48] to-[#9C27B0] text-white font-bold text-sm shadow-lg shadow-rose-500/30 flex items-center justify-center gap-2 border border-white/20 active:scale-95 transition-all"
           >
             <span>Yes, show me! 💖</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4 stroke-[2.5]" />
           </motion.button>
 
           {/* Playful Evasive NO Button */}
@@ -170,7 +170,7 @@ export default function Screen2Welcome({ onNext }) {
             onMouseEnter={dodgeNoButton}
             onTouchStart={dodgeNoButton}
             onClick={dodgeNoButton}
-            className="py-2.5 px-5 rounded-xl bg-white/75 backdrop-blur-md text-plum/70 font-semibold text-xs border border-white/90 shadow-sm hover:text-plum hover:bg-white active:bg-rose-50"
+            className="py-2.5 px-5 rounded-xl bg-white/95 text-[#4A1530] font-bold text-xs border border-rose-300 shadow-md hover:bg-white active:bg-rose-100 transition-colors"
           >
             No 🙈
           </motion.button>

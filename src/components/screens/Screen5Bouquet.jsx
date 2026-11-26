@@ -110,10 +110,10 @@ export default function Screen5Bouquet({ onNext, openedCards, setOpenedCards }) 
               whileHover={{ scale: 1.08 }}
               whileTap={{ scale: 0.94 }}
               onClick={(e) => handleOpenCard(item, index, e)}
-              className={`z-20 px-3 py-1.5 rounded-full backdrop-blur-md border shadow-md flex items-center gap-1.5 transition-all duration-300 text-xs font-bold ${
+              className={`z-20 px-3.5 py-1.5 rounded-full border shadow-md flex items-center gap-1.5 transition-all duration-300 text-xs font-bold ${
                 isOpened
-                  ? 'bg-white/95 text-rosegold border-rosegold/40 shadow-rose-glow'
-                  : 'bg-white/85 text-plum border-white/90 hover:bg-white animate-pulse-slow'
+                  ? 'bg-white text-[#D81B60] border-rose-400 shadow-rose-500/20'
+                  : 'bg-white/95 text-[#4A1530] border border-rose-300 shadow-md hover:bg-white hover:text-[#D81B60] animate-pulse-slow'
               }`}
             >
               <span>{item.emoji}</span>
@@ -187,10 +187,10 @@ export default function Screen5Bouquet({ onNext, openedCards, setOpenedCards }) 
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.96 }}
             onClick={onNext}
-            className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-rosegold via-rosegold-light to-rosegold text-white font-bold text-sm shadow-rose-glow flex items-center justify-center gap-2 border border-white/50"
+            className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-[#D81B60] via-[#E11D48] to-[#9C27B0] text-white font-bold text-sm shadow-lg shadow-rose-500/30 flex items-center justify-center gap-2 border border-white/20"
           >
             <span>Next Surprise →</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4 stroke-[2.5]" />
           </motion.button>
         ) : (
           <p className="text-[11px] text-plum/50 font-medium">
@@ -221,10 +221,10 @@ export default function Screen5Bouquet({ onNext, openedCards, setOpenedCards }) 
 
               <button
                 onClick={closeCard}
-                className="absolute top-2 right-2 p-1.5 rounded-full bg-blush-50 text-plum/60 hover:text-plum hover:bg-blush-100 transition-colors"
+                className="absolute top-2 right-2 p-1.5 rounded-full bg-white/95 text-[#4A1530] border border-rose-300 shadow-sm hover:text-[#D81B60] hover:bg-white transition-colors"
                 aria-label="Close card"
               >
-                <X className="w-4 h-4" />
+                <X className="w-4 h-4 stroke-[2.5]" />
               </button>
 
               <div className="w-full h-36 mt-2 rounded-xl bg-gradient-to-tr from-blush-100 via-cream-100 to-lavender-100 border border-white flex flex-col items-center justify-center p-4 relative overflow-hidden shadow-inner">
@@ -249,7 +249,7 @@ export default function Screen5Bouquet({ onNext, openedCards, setOpenedCards }) 
 
               <button
                 onClick={closeCard}
-                className="mt-4 w-full py-2 rounded-xl bg-blush-100/70 text-plum font-semibold text-xs hover:bg-blush-200/70 transition-colors"
+                className="mt-4 w-full py-2.5 rounded-xl bg-gradient-to-r from-[#D81B60] to-[#BE185D] text-white font-bold text-xs shadow-md shadow-rose-500/25 border border-white/20 hover:opacity-95 transition-opacity"
               >
                 Keep in Heart 💖
               </button>

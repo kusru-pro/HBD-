@@ -175,8 +175,8 @@ export default function Screen1Passcode({ onUnlock, onOpenAdmin }) {
                 transition={{ duration: 0.2 }}
                 className={`w-10 h-10 rounded-2xl flex items-center justify-center border transition-all duration-300 ${
                   isFilled
-                    ? 'bg-gradient-to-tr from-rosegold to-rosegold-light border-rosegold shadow-rose-glow text-white'
-                    : 'bg-white/70 border-white/90 shadow-inner'
+                    ? 'bg-gradient-to-tr from-[#D81B60] to-[#BE185D] border-rose-400 shadow-rose-glow text-white'
+                    : 'bg-white/90 border-rose-200 shadow-inner'
                 }`}
               >
                 <Heart
@@ -218,7 +218,7 @@ export default function Screen1Passcode({ onUnlock, onOpenAdmin }) {
               whileTap={{ scale: 0.92 }}
               onClick={() => handlePress(num)}
               disabled={isUnlocked}
-              className="h-14 rounded-2xl bg-white/75 backdrop-blur-md border border-white/90 shadow-glass text-xl font-bold text-plum/90 hover:bg-white hover:text-rosegold transition-colors flex items-center justify-center active:bg-rosegold-shimmer/40"
+              className="h-14 rounded-2xl bg-white/95 backdrop-blur-md border border-rose-200 shadow-md text-xl font-bold text-[#3B0F26] hover:bg-white hover:text-[#D81B60] transition-colors flex items-center justify-center active:bg-rose-200"
             >
               {num}
             </motion.button>
@@ -226,7 +226,7 @@ export default function Screen1Passcode({ onUnlock, onOpenAdmin }) {
 
           {/* Empty spacer / Heart decor */}
           <div className="h-14 flex items-center justify-center">
-            <Heart className="w-5 h-5 text-rosegold/30 fill-rosegold/10 animate-pulse" />
+            <Heart className="w-5 h-5 text-[#D81B60]/40 fill-[#D81B60]/20 animate-pulse" />
           </div>
 
           {/* Digit 0 */}
@@ -235,7 +235,7 @@ export default function Screen1Passcode({ onUnlock, onOpenAdmin }) {
             whileTap={{ scale: 0.92 }}
             onClick={() => handlePress('0')}
             disabled={isUnlocked}
-            className="h-14 rounded-2xl bg-white/75 backdrop-blur-md border border-white/90 shadow-glass text-xl font-bold text-plum/90 hover:bg-white hover:text-rosegold transition-colors flex items-center justify-center active:bg-rosegold-shimmer/40"
+            className="h-14 rounded-2xl bg-white/95 backdrop-blur-md border border-rose-200 shadow-md text-xl font-bold text-[#3B0F26] hover:bg-white hover:text-[#D81B60] transition-colors flex items-center justify-center active:bg-rose-200"
           >
             0
           </motion.button>
@@ -246,9 +246,9 @@ export default function Screen1Passcode({ onUnlock, onOpenAdmin }) {
             whileTap={{ scale: 0.92 }}
             onClick={handleDelete}
             disabled={isUnlocked || digits.length === 0}
-            className={`h-14 rounded-2xl bg-white/75 backdrop-blur-md border border-white/90 shadow-glass flex items-center justify-center transition-colors ${
+            className={`h-14 rounded-2xl bg-white/95 backdrop-blur-md border border-rose-200 shadow-md flex items-center justify-center transition-colors ${
               digits.length > 0
-                ? 'text-plum hover:bg-white hover:text-rose-600 cursor-pointer active:bg-rose-50'
+                ? 'text-[#3B0F26] hover:bg-white hover:text-rose-600 cursor-pointer active:bg-rose-200'
                 : 'text-plum/30 cursor-not-allowed'
             }`}
             aria-label="Delete last digit"

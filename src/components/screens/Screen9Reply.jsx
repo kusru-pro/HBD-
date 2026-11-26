@@ -121,10 +121,10 @@ export default function Screen9Reply({ onReplay }) {
                         playTapSound();
                         setSelectedMood(mood);
                       }}
-                      className={`px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all duration-200 border flex items-center gap-1 ${
+                      className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 border flex items-center gap-1 ${
                         isSelected
-                          ? 'bg-gradient-to-r from-rosegold to-rosegold-light text-white border-rosegold shadow-sm scale-105'
-                          : 'bg-white/80 text-plum/70 border-blush-200/80 hover:bg-white hover:text-plum'
+                          ? 'bg-gradient-to-r from-[#D81B60] to-[#BE185D] text-white border-transparent shadow-md shadow-rose-500/30 scale-105 font-bold'
+                          : 'bg-white/95 text-[#4A1530] border-rose-300 shadow-sm hover:bg-rose-50 font-semibold'
                       }`}
                     >
                       <span>{mood.label}</span>
@@ -163,9 +163,9 @@ export default function Screen9Reply({ onReplay }) {
                   whileTap={{ scale: isSubmitting || !message.trim() ? 1 : 0.96 }}
                   onClick={handleSendReply}
                   disabled={!message.trim() || isSubmitting}
-                  className={`w-full py-3.5 px-4 rounded-xl font-bold text-xs shadow-rose-glow flex items-center justify-center gap-2 border transition-all ${
+                  className={`w-full py-3.5 px-4 rounded-xl font-bold text-xs shadow-lg flex items-center justify-center gap-2 border transition-all ${
                     message.trim() && !isSubmitting
-                      ? 'bg-gradient-to-r from-rosegold via-rosegold-light to-rosegold text-white border-white/50 cursor-pointer animate-pulse-slow'
+                      ? 'bg-gradient-to-r from-[#D81B60] via-[#E11D48] to-[#9C27B0] text-white border-white/20 shadow-rose-500/30 cursor-pointer animate-pulse-slow'
                       : 'bg-slate-200 text-slate-400 border-transparent cursor-not-allowed shadow-none'
                   }`}
                 >
@@ -222,7 +222,7 @@ export default function Screen9Reply({ onReplay }) {
                 <button
                   type="button"
                   onClick={handleWriteAnother}
-                  className="w-full py-2.5 px-4 rounded-xl bg-blush-100/70 hover:bg-blush-200 text-plum font-semibold text-xs border border-blush-200 transition-colors"
+                  className="w-full py-2.5 px-4 rounded-xl bg-white/95 hover:bg-white text-[#4A1530] font-bold text-xs border border-rose-300 shadow-md transition-colors"
                 >
                   Write another note ✏️
                 </button>
@@ -250,7 +250,7 @@ export default function Screen9Reply({ onReplay }) {
       <div className="w-full max-w-[320px] pb-4 flex flex-col items-center">
         <button
           onClick={onReplay}
-          className="text-xs text-plum/60 hover:text-rosegold font-semibold flex items-center justify-center gap-1.5 transition-colors"
+          className="text-xs text-[#4A1530] hover:text-[#D81B60] font-bold bg-white/95 px-3.5 py-1.5 rounded-full border border-rose-300 shadow-sm flex items-center justify-center gap-1.5 transition-colors"
         >
           <RotateCcw className="w-3.5 h-3.5" />
           <span>Replay Whole Surprise 🔄</span>

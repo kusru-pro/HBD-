@@ -116,11 +116,11 @@ export default function Screen6Envelope({
               whileTap={{ scale: 0.9 }}
               className="relative z-10 flex flex-col items-center"
             >
-              <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-[#B86F81] via-[#D48C9E] to-[#E5A9B8] shadow-rose-glow border-2 border-white flex items-center justify-center p-2">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-[#D81B60] via-[#E11D48] to-[#BE185D] shadow-lg shadow-rose-500/30 border-2 border-white flex items-center justify-center p-2">
                 <Heart className="w-8 h-8 text-white fill-white/90 drop-shadow" />
               </div>
 
-              <span className="mt-2 text-[10px] font-bold text-plum/80 bg-white/90 px-2.5 py-0.5 rounded-full border border-rosegold/30 shadow-sm animate-pulse">
+              <span className="mt-2 text-[10px] font-bold text-[#4A1530] bg-white/95 px-2.5 py-0.5 rounded-full border border-rose-300 shadow-sm animate-pulse">
                 Tap to open 💌
               </span>
             </motion.div>
@@ -143,7 +143,7 @@ export default function Screen6Envelope({
               {!isTypingDone ? (
                 <button
                   onClick={handleSkipTyping}
-                  className="flex items-center gap-1 text-[10px] font-semibold text-plum/60 hover:text-rosegold bg-blush-50 px-2 py-0.5 rounded-full border border-blush-200"
+                  className="flex items-center gap-1 text-[11px] font-bold text-[#4A1530] hover:text-[#D81B60] bg-white/95 px-2.5 py-1 rounded-full border border-rose-300 shadow-sm transition-colors"
                 >
                   <FastForward className="w-2.5 h-2.5" />
                   <span>Skip</span>
@@ -151,7 +151,7 @@ export default function Screen6Envelope({
               ) : (
                 <button
                   onClick={handleReplayLetter}
-                  className="flex items-center gap-1 text-[10px] font-semibold text-plum/60 hover:text-rosegold bg-blush-50 px-2 py-0.5 rounded-full border border-blush-200"
+                  className="flex items-center gap-1 text-[11px] font-bold text-[#4A1530] hover:text-[#D81B60] bg-white/95 px-2.5 py-1 rounded-full border border-rose-300 shadow-sm transition-colors"
                 >
                   <RotateCcw className="w-2.5 h-2.5" />
                   <span>Replay</span>
@@ -191,10 +191,10 @@ export default function Screen6Envelope({
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.96 }}
             onClick={onNext}
-            className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-rosegold via-rosegold-light to-rosegold text-white font-bold text-sm shadow-rose-glow flex items-center justify-center gap-2 border border-white/50 animate-pulse-slow"
+            className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-[#D81B60] via-[#E11D48] to-[#9C27B0] text-white font-bold text-sm shadow-lg shadow-rose-500/30 flex items-center justify-center gap-2 border border-white/20 animate-pulse-slow"
           >
             <span>One More Surprise →</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4 stroke-[2.5]" />
           </motion.button>
         ) : isOpen ? (
           <p className="text-[11px] text-plum/50 font-medium animate-pulse">

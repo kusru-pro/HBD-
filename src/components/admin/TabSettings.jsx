@@ -110,9 +110,9 @@ export default function TabSettings({ onResetCompleted }) {
 
         <button
           onClick={handleExport}
-          className="w-full py-2.5 px-3 rounded-xl bg-white hover:bg-blush-50 text-plum font-semibold text-xs border border-blush-200 flex items-center justify-center gap-2 transition-colors shadow-sm"
+          className="w-full py-2.5 px-3 rounded-xl bg-white/95 hover:bg-white text-[#4A1530] font-bold text-xs border border-rose-300 flex items-center justify-center gap-2 transition-colors shadow-md"
         >
-          <Download className="w-3.5 h-3.5 text-rosegold" />
+          <Download className="w-3.5 h-3.5 text-[#D81B60]" />
           <span>Download Config JSON 📁</span>
         </button>
       </div>
@@ -138,10 +138,10 @@ export default function TabSettings({ onResetCompleted }) {
         <button
           onClick={handleImport}
           disabled={!importText.trim() || isProcessing}
-          className={`w-full py-2.5 px-3 rounded-xl font-semibold text-xs border flex items-center justify-center gap-2 transition-colors shadow-sm ${
+          className={`w-full py-2.5 px-3 rounded-xl font-bold text-xs border flex items-center justify-center gap-2 transition-colors shadow-sm ${
             importText.trim() && !isProcessing
-              ? 'bg-gradient-to-r from-rosegold to-rosegold-light text-white border-rosegold hover:opacity-95'
-              : 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
+              ? 'bg-gradient-to-r from-[#D81B60] via-[#E11D48] to-[#9C27B0] text-white border-white/20 shadow-lg shadow-rose-500/30 hover:opacity-95'
+              : 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed shadow-none'
           }`}
         >
           <Upload className="w-3.5 h-3.5" />
@@ -173,7 +173,7 @@ export default function TabSettings({ onResetCompleted }) {
         <button
           onClick={handleReset}
           disabled={isProcessing}
-          className="w-full py-2 px-3 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold text-xs border border-rose-200 flex items-center justify-center gap-1.5 transition-colors disabled:opacity-50"
+          className="w-full py-2.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs border border-rose-700 shadow-md flex items-center justify-center gap-1.5 transition-colors disabled:opacity-50"
         >
           <RotateCcw className="w-3.5 h-3.5" />
           <span>Reset All Content In Firestore</span>

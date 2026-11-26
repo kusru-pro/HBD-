@@ -63,7 +63,7 @@ export default function TabReplies() {
         <div className="flex items-center gap-1.5">
           <button
             onClick={handleRefresh}
-            className="flex items-center gap-1 text-[10px] font-semibold text-rosegold hover:text-rosegold-dark bg-blush-50 hover:bg-blush-100 px-2.5 py-1 rounded-lg border border-rosegold/30 transition-colors"
+            className="flex items-center gap-1 text-[11px] font-bold text-[#4A1530] hover:text-[#D81B60] bg-white/95 hover:bg-white px-2.5 py-1.5 rounded-lg border border-rose-300 shadow-sm transition-colors"
             title="Fetch latest from server"
           >
             <RefreshCw className={`w-3 h-3 ${isRefreshing ? 'animate-spin' : ''}`} />
@@ -73,7 +73,7 @@ export default function TabReplies() {
           {replies.length > 0 && (
             <button
               onClick={handleClearAll}
-              className="text-[10px] font-semibold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 px-2.5 py-1 rounded-lg border border-rose-200 transition-colors"
+              className="text-[11px] font-bold text-white bg-rose-600 hover:bg-rose-700 px-3 py-1.5 rounded-lg border border-rose-700 shadow-sm transition-colors"
             >
               Clear All
             </button>
@@ -137,11 +137,11 @@ export default function TabReplies() {
                 <div className="flex items-center justify-end gap-2 pt-1 border-t border-blush-50">
                   <button
                     onClick={() => handleCopy(item)}
-                    className="flex items-center gap-1 text-[11px] font-semibold text-plum/70 hover:text-rosegold bg-blush-50/80 px-2.5 py-1 rounded-lg border border-blush-200 transition-colors"
+                    className="flex items-center gap-1 text-[11px] font-bold text-[#4A1530] hover:text-[#D81B60] bg-white/95 hover:bg-white px-2.5 py-1 rounded-lg border border-rose-300 shadow-sm transition-colors"
                   >
                     {copiedId === item.id ? (
                       <>
-                        <Check className="w-3 h-3 text-emerald-600" />
+                        <Check className="w-3 h-3 text-emerald-600 stroke-[3]" />
                         <span className="text-emerald-700 font-bold">Copied!</span>
                       </>
                     ) : (
@@ -154,7 +154,7 @@ export default function TabReplies() {
 
                   <button
                     onClick={() => handleDelete(item.id)}
-                    className="p-1 rounded-lg text-rose-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                    className="p-1.5 rounded-lg text-white bg-rose-600 hover:bg-rose-700 transition-colors shadow-sm"
                     title="Delete message"
                     aria-label="Delete message"
                   >

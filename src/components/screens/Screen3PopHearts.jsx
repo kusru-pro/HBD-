@@ -227,7 +227,7 @@ export default function Screen3PopHearts({ onNext, popped, setPopped }) {
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.96 }}
               onClick={onNext}
-              className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-rosegold via-rosegold-light to-rosegold text-white font-bold text-sm shadow-rose-glow flex items-center justify-center gap-2 border border-white/50 animate-pulse-slow"
+              className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-[#D81B60] via-[#E11D48] to-[#9C27B0] text-white font-bold text-sm shadow-lg shadow-rose-500/30 flex items-center justify-center gap-2 border border-white/20 animate-pulse-slow"
             >
               <span>Next Surprise →</span>
             </motion.button>
@@ -235,9 +235,9 @@ export default function Screen3PopHearts({ onNext, popped, setPopped }) {
             {/* Optional replay button for this screen */}
             <button
               onClick={handleResetBalloons}
-              className="text-[11px] text-plum/50 hover:text-rosegold flex items-center justify-center gap-1 mt-1 transition-colors"
+              className="text-xs font-semibold text-[#4A1530] hover:text-[#D81B60] bg-white/95 px-3 py-1.5 rounded-full border border-rose-300 shadow-sm flex items-center justify-center gap-1.5 mt-2 transition-colors"
             >
-              <RotateCcw className="w-3 h-3" />
+              <RotateCcw className="w-3.5 h-3.5" />
               <span>Pop balloons again</span>
             </button>
           </motion.div>

@@ -107,11 +107,11 @@ export default function Screen8Finale({ onReplay, onGoToReply, cleanView, setCle
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.96 }}
             onClick={onGoToReply}
-            className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-rosegold via-rosegold-light to-rosegold text-white font-bold text-xs shadow-rose-glow border border-white/50 flex items-center justify-center gap-2 animate-pulse-slow"
+            className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-[#D81B60] via-[#E11D48] to-[#9C27B0] text-white font-bold text-xs shadow-lg shadow-rose-500/30 border border-white/20 flex items-center justify-center gap-2 animate-pulse-slow"
           >
             <MessageSquareHeart className="w-4 h-4" />
             <span>Write a Reply 💌 (Leave a Note)</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4 stroke-[2.5]" />
           </motion.button>
 
           {/* Clean View Button for aesthetic screenshots */}
@@ -119,9 +119,9 @@ export default function Screen8Finale({ onReplay, onGoToReply, cleanView, setCle
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.96 }}
             onClick={toggleCleanView}
-            className="w-full py-2.5 px-4 rounded-2xl bg-white/85 backdrop-blur-md text-plum font-bold text-xs shadow-glass border border-white/90 flex items-center justify-center gap-2 hover:bg-white"
+            className="w-full py-2.5 px-4 rounded-2xl bg-white/95 text-[#4A1530] font-bold text-xs shadow-md border border-rose-300 flex items-center justify-center gap-2 hover:bg-white"
           >
-            <Camera className="w-3.5 h-3.5 text-rosegold" />
+            <Camera className="w-3.5 h-3.5 text-[#D81B60]" />
             <span>Clean View 📸 (Take Screenshot)</span>
           </motion.button>
 
@@ -131,7 +131,7 @@ export default function Screen8Finale({ onReplay, onGoToReply, cleanView, setCle
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.96 }}
               onClick={onReplay}
-              className="py-2 px-3 rounded-xl bg-white/70 backdrop-blur-md text-plum/80 font-semibold text-xs border border-white/80 shadow-sm flex items-center justify-center gap-1.5 hover:text-plum hover:bg-white"
+              className="py-2.5 px-3 rounded-xl bg-white/95 text-[#4A1530] font-bold text-xs border border-rose-300 shadow-md flex items-center justify-center gap-1.5 hover:bg-white hover:text-[#D81B60] transition-colors"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>Replay 🔄</span>
@@ -141,11 +141,11 @@ export default function Screen8Finale({ onReplay, onGoToReply, cleanView, setCle
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.96 }}
               onClick={handleShareOrCopy}
-              className="py-2 px-3 rounded-xl bg-white/70 backdrop-blur-md text-plum/80 font-semibold text-xs border border-white/80 shadow-sm flex items-center justify-center gap-1.5 hover:text-plum hover:bg-white"
+              className="py-2.5 px-3 rounded-xl bg-white/95 text-[#4A1530] font-bold text-xs border border-rose-300 shadow-md flex items-center justify-center gap-1.5 hover:bg-white hover:text-[#D81B60] transition-colors"
             >
               {copiedToast ? (
                 <>
-                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  <Check className="w-3.5 h-3.5 text-emerald-600 stroke-[3]" />
                   <span className="text-emerald-700 font-bold">Copied!</span>
                 </>
               ) : (

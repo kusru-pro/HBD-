@@ -44,18 +44,18 @@ export default function HeaderControls({
             whileTap={{ scale: 0.92 }}
             onClick={handleBackClick}
             aria-label="Go back to previous screen"
-            className="w-9 h-9 rounded-full backdrop-blur-md border border-white/85 bg-white/75 text-plum/75 hover:text-plum hover:bg-white shadow-sm flex items-center justify-center transition-all duration-200"
+            className="w-9 h-9 rounded-full bg-white/95 text-[#4A1530] border border-rose-300 hover:bg-white shadow-md flex items-center justify-center transition-all duration-200"
           >
-            <ChevronLeft className="w-4 h-4 text-plum/80 -ml-0.5" />
+            <ChevronLeft className="w-4 h-4 text-[#4A1530] -ml-0.5 stroke-[2.5]" />
           </motion.button>
         ) : (
           <motion.div 
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
-            className="w-9 h-9 rounded-full bg-white/60 backdrop-blur-md border border-white/80 shadow-sm flex items-center justify-center"
+            className="w-9 h-9 rounded-full bg-white/95 border border-rose-300 shadow-md flex items-center justify-center"
             title="Birthday Surprise"
           >
-            <Sparkles className="w-4 h-4 text-rosegold animate-pulse" />
+            <Sparkles className="w-4 h-4 text-[#D81B60] animate-pulse" />
           </motion.div>
         )}
       </div>
@@ -96,22 +96,22 @@ export default function HeaderControls({
           whileTap={{ scale: 0.92 }}
           onClick={onToggleMusic}
           aria-label="Toggle background music"
-          className={`relative w-9 h-9 rounded-full backdrop-blur-md border transition-all duration-300 shadow-sm flex items-center justify-center ${
+          className={`relative w-9 h-9 rounded-full border transition-all duration-300 shadow-md flex items-center justify-center ${
             isMusicPlaying
-              ? 'bg-white/95 text-rosegold border-rosegold/30 shadow-soft-glow'
-              : 'bg-white/70 text-plum/60 border-white/85 hover:text-plum hover:bg-white'
+              ? 'bg-white text-[#D81B60] border-rose-400 shadow-rose-500/20'
+              : 'bg-white/95 text-[#4A1530] border-rose-300 hover:bg-white hover:text-[#D81B60]'
           }`}
         >
           {isMusicPlaying ? (
             <>
-              <Volume2 className="w-4 h-4 text-rosegold" />
+              <Volume2 className="w-4 h-4 text-[#D81B60]" />
               <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rosegold opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-rosegold"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#D81B60] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#D81B60]"></span>
               </span>
             </>
           ) : (
-            <VolumeX className="w-4 h-4" />
+            <VolumeX className="w-4 h-4 stroke-[2]" />
           )}
         </motion.button>
       </div>

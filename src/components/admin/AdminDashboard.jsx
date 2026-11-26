@@ -139,19 +139,19 @@ export default function AdminDashboard({ isOpen, onClose, onConfigSaved }) {
             {isAuthenticated && (
               <button
                 onClick={handleClose}
-                className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-blush-100 hover:bg-blush-200 text-plum font-semibold text-xs border border-blush-200 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#4A1530] hover:bg-[#380E23] text-white font-bold text-xs border border-[#4A1530] shadow-md transition-colors"
               >
-                <Eye className="w-3.5 h-3.5 text-rosegold" />
+                <Eye className="w-3.5 h-3.5 text-rose-300" />
                 <span>Preview</span>
               </button>
             )}
 
             <button
               onClick={handleClose}
-              className="p-1.5 rounded-full bg-white text-plum/60 hover:text-plum hover:bg-blush-100 transition-colors"
+              className="p-1.5 rounded-full bg-white/95 text-[#4A1530] border border-rose-300 hover:text-[#D81B60] hover:bg-white transition-colors shadow-sm"
               aria-label="Close admin"
             >
-              <X className="w-4 h-4" />
+              <X className="w-4 h-4 stroke-[2.5]" />
             </button>
           </div>
         </div>
@@ -193,7 +193,7 @@ export default function AdminDashboard({ isOpen, onClose, onConfigSaved }) {
 
               <button
                 type="submit"
-                className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-rosegold to-rosegold-light text-white font-bold text-xs shadow-rose-glow hover:opacity-95 transition-opacity"
+                className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#D81B60] via-[#E11D48] to-[#9C27B0] text-white font-bold text-xs shadow-lg shadow-rose-500/30 hover:opacity-95 transition-opacity"
               >
                 Unlock Dashboard 🔓
               </button>
@@ -217,14 +217,14 @@ export default function AdminDashboard({ isOpen, onClose, onConfigSaved }) {
                     }}
                     className={`flex items-center gap-1.5 px-3 py-2 text-xs font-bold rounded-t-xl transition-all border-b-2 whitespace-nowrap ${
                       isActive
-                        ? 'border-rosegold text-rosegold bg-white/90 shadow-sm'
-                        : 'border-transparent text-plum/60 hover:text-plum hover:bg-white/40'
+                        ? 'border-b-2 border-[#D81B60] text-[#D81B60] bg-white font-bold shadow-sm'
+                        : 'border-transparent text-[#4A1530]/75 hover:text-[#4A1530] hover:bg-white/60 font-semibold'
                     }`}
                   >
                     <Icon className="w-3.5 h-3.5" />
                     <span>{tab.label}</span>
                     {typeof tab.badge === 'number' && tab.badge > 0 && (
-                      <span className="ml-0.5 px-1.5 py-0.2 rounded-full bg-rosegold text-white text-[9px] font-mono">
+                      <span className="ml-0.5 px-1.5 py-0.2 rounded-full bg-[#D81B60] text-white text-[9px] font-mono">
                         {tab.badge}
                       </span>
                     )}
@@ -343,7 +343,7 @@ export default function AdminDashboard({ isOpen, onClose, onConfigSaved }) {
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="px-3 py-2 rounded-xl text-xs font-semibold text-plum/70 hover:text-plum bg-blush-50 hover:bg-blush-100 transition-colors"
+                  className="px-3.5 py-2 rounded-xl text-xs font-bold text-[#4A1530] bg-white/95 hover:bg-white border border-rose-300 shadow-sm transition-colors"
                 >
                   Close
                 </button>
@@ -353,10 +353,10 @@ export default function AdminDashboard({ isOpen, onClose, onConfigSaved }) {
                   whileTap={{ scale: isSaving ? 1 : 0.96 }}
                   disabled={isSaving}
                   onClick={handleSaveAll}
-                  className={`px-5 py-2 rounded-xl text-white font-bold text-xs shadow-rose-glow flex items-center gap-1.5 border border-white/40 transition-all ${
+                  className={`px-5 py-2.5 rounded-xl text-white font-bold text-xs shadow-lg shadow-rose-500/30 flex items-center gap-1.5 border border-white/20 transition-all ${
                     isSaving 
-                      ? 'bg-rosegold/70 cursor-not-allowed opacity-80' 
-                      : 'bg-gradient-to-r from-rosegold via-rosegold-light to-rosegold'
+                      ? 'bg-[#D81B60]/70 cursor-not-allowed opacity-80' 
+                      : 'bg-gradient-to-r from-[#D81B60] via-[#E11D48] to-[#9C27B0] hover:opacity-95'
                   }`}
                 >
                   {isSaving ? (
@@ -367,7 +367,7 @@ export default function AdminDashboard({ isOpen, onClose, onConfigSaved }) {
                   ) : (
                     <>
                       <Save className="w-3.5 h-3.5" />
-                      <span>Save to Firestore ☁️</span>
+                      <span>Save Changes ☁️</span>
                     </>
                   )}
                 </motion.button>
